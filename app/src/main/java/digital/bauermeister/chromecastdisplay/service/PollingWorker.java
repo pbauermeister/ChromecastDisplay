@@ -7,7 +7,9 @@ import java.net.ConnectException;
 import java.security.GeneralSecurityException;
 
 import de.greenrobot.event.EventBus;
+import digital.bauermeister.chromecastdisplay.ChromecastInfo;
 import digital.bauermeister.chromecastdisplay.Config;
+import digital.bauermeister.chromecastdisplay.event.from_worker.ChromecastInfoEvent;
 import digital.bauermeister.chromecastdisplay.event.to_worker.PauseEvent;
 import digital.bauermeister.chromecastdisplay.event.to_worker.ResumeEvent;
 import su.litvak.chromecast.api.v2.Application;
@@ -25,6 +27,7 @@ public class PollingWorker {
     private static final String TAG = "PollingWorker";
 
     private State state = new State();
+    private ChromecastInfo lastInfo = null;
 
     public PollingWorker() {
         EventBus.getDefault().register(this);
@@ -112,6 +115,19 @@ public class PollingWorker {
 
                     Log.i(TAG, ">>> +++++++ app.id      " + app.id);
                     Log.i(TAG, ">>> +++++++ app.name    " + app.name);
+
+                    ChromecastInfo info = new ChromecastInfo(
+                            chromecast.getName(),
+                            app == null ? null : app.name,
+                            app == null ? null : app.statusText,
+                            status.volume.level,
+                            status.volume.muted,
+                            status.standBy
+                    );
+                    if (!info.equals(lastInfo)) {
+                        lastInfo = info;
+                        EventBus.getDefault().post(new ChromecastInfoEvent(info));
+                    }
                 }
             } else {
                 if (++state.nbNotConnected > Config.REDISCOVER_AFTER_NOT_CONNECTED_NB)
