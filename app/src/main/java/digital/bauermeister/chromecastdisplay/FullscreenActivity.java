@@ -5,6 +5,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import de.greenrobot.event.EventBus;
+import digital.bauermeister.chromecastdisplay.event.to_worker.PauseEvent;
+import digital.bauermeister.chromecastdisplay.event.to_worker.ResumeEvent;
+
 public class FullscreenActivity extends AppCompatActivity {
 
     @Override
@@ -35,13 +39,12 @@ public class FullscreenActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        EventBus.getDefault().post(new ResumeEvent());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        EventBus.getDefault().post(new PauseEvent());
     }
-
-
-
 }

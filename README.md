@@ -1,6 +1,7 @@
-# ChromecastDisplay
+# Chromecast Display
 
-Work-in-progress project, currently does not yet do anything useful.
+Work-in-progress project, currently does not do anything visibly
+useful, yet.
 
 ## Purpose
 

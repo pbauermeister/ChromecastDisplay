@@ -8,4 +8,5 @@ public class State {
     boolean didDiscovery = false;
     int nbDiscoveredNothing = 0;
     int nbNotConnected = 0;
+    boolean paused = false;
 }

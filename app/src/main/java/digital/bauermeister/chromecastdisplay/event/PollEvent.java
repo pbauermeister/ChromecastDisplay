@@ -1,4 +1,4 @@
-package digital.bauermeister.chromecastdisplay.Event;
+package digital.bauermeister.chromecastdisplay.event;
 
 /**
  * Created by pascal on 2/21/16.

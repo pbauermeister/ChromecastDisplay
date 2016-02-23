@@ -7,24 +7,15 @@ import android.os.IBinder;
 import android.util.Log;
 
 import de.greenrobot.event.EventBus;
-import digital.bauermeister.chromecastdisplay.Event.PollEvent;
+import digital.bauermeister.chromecastdisplay.Config;
+import digital.bauermeister.chromecastdisplay.event.PollEvent;
 
 public class TheService extends Service {
     private static final String TAG = "TheService";
 
-    private static final int DELAY_MS = 2000;
-
     Handler handler = new Handler();
     private boolean enabled = true;
-
     private PollingWorker pollingWorker;
-
-    private Runnable pollingHandler = new Runnable() {
-        @Override
-        public void run() {
-            EventBus.getDefault().post(new PollEvent());
-        }
-    };
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -62,10 +53,23 @@ public class TheService extends Service {
         return START_STICKY;
     }
 
+    /*
+     * Scheduling and execution of periodic task
+     */
+
+    private Runnable pollingHandler = new Runnable() {
+        @Override
+        public void run() {
+            if (enabled) {
+                EventBus.getDefault().post(new PollEvent());
+            }
+        }
+    };
+
     public void onEventBackgroundThread(PollEvent event) {
         if (enabled) {
             pollingWorker.poll();
-            handler.postDelayed(pollingHandler, DELAY_MS);
+            handler.postDelayed(pollingHandler, Config.POLLING_DELAY_MS);
         }
     }
 }

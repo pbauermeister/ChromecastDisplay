@@ -7,6 +7,9 @@ import java.net.ConnectException;
 import java.security.GeneralSecurityException;
 
 import de.greenrobot.event.EventBus;
+import digital.bauermeister.chromecastdisplay.Config;
+import digital.bauermeister.chromecastdisplay.event.to_worker.PauseEvent;
+import digital.bauermeister.chromecastdisplay.event.to_worker.ResumeEvent;
 import su.litvak.chromecast.api.v2.Application;
 import su.litvak.chromecast.api.v2.ChromeCast;
 import su.litvak.chromecast.api.v2.ChromeCasts;
@@ -21,35 +24,33 @@ import su.litvak.chromecast.api.v2.Status;
 public class PollingWorker {
     private static final String TAG = "PollingWorker";
 
-    private static final int NB_NOTHING_TO_REDISCOVER = 4;
-    private static final int NB_NOT_CONNECTED_TO_REDISCOVER = 4;
-
     private State state = new State();
 
     public PollingWorker() {
-//        EventBus.getDefault().register(this);
+        EventBus.getDefault().register(this);
     }
 
     public void destroy() {
-//        EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(this);
     }
 
     public void poll() {
-        try {
-            if (state.didDiscovery) pollDevices();
-            else discover();
-        } catch (ConnectException e) {
-            Log.e(TAG, "### " + e);
-        } catch (IOException e) {
-            Log.e(TAG, "### " + e);
-        } catch (Throwable t) {
-            Log.e(TAG, "### " + t);
-            t.printStackTrace();
+        if (!state.paused) {
+            try {
+                if (state.didDiscovery) pollDevices();
+                else discover();
+            } catch (ConnectException e) {
+                Log.e(TAG, "### " + e);
+            } catch (IOException e) {
+                Log.e(TAG, "### " + e);
+            } catch (Throwable t) {
+                Log.e(TAG, "### " + t);
+                t.printStackTrace();
+            }
         }
-
     }
 
-    public void discover() throws IOException {
+    private void discover() throws IOException {
         Log.d(TAG, ">>> start discovery");
 
         state.didDiscovery = false;
@@ -62,7 +63,7 @@ public class PollingWorker {
         state.nbNotConnected = 0;
     }
 
-    public void pollDevices() throws IOException, GeneralSecurityException {
+    private void pollDevices() throws IOException, GeneralSecurityException {
         // Do something here on the main thread
         Log.d(TAG, ">>> poll discovery");
 
@@ -71,7 +72,7 @@ public class PollingWorker {
         Log.d(TAG, ">>> poll discovery: " + nb);
 
         if (nb == 0) {
-            if (++state.nbDiscoveredNothing > NB_NOTHING_TO_REDISCOVER) {
+            if (++state.nbDiscoveredNothing > Config.REDISCOVER_AFTER_NONE_FOUND_NB) {
                 state.didDiscovery = false;
             }
         } else {
@@ -113,9 +114,19 @@ public class PollingWorker {
                     Log.i(TAG, ">>> +++++++ app.name    " + app.name);
                 }
             } else {
-                if (++state.nbNotConnected > NB_NOT_CONNECTED_TO_REDISCOVER)
+                if (++state.nbNotConnected > Config.REDISCOVER_AFTER_NOT_CONNECTED_NB)
                     state.didDiscovery = false;
             }
         }
     }
+
+
+    public void onEventBackgroundThread(PauseEvent event) {
+        state.paused = true;
+    }
+
+    public void onEventBackgroundThread(ResumeEvent event) {
+        state.paused = false;
+    }
+
 }
