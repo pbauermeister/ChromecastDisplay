@@ -10,6 +10,7 @@ import de.greenrobot.event.EventBus;
 import digital.bauermeister.chromecastdisplay.ChromecastInfo;
 import digital.bauermeister.chromecastdisplay.Config;
 import digital.bauermeister.chromecastdisplay.event.from_worker.ChromecastInfoEvent;
+import digital.bauermeister.chromecastdisplay.event.from_worker.StateEvent;
 import digital.bauermeister.chromecastdisplay.event.to_worker.PauseEvent;
 import digital.bauermeister.chromecastdisplay.event.to_worker.ResumeEvent;
 import su.litvak.chromecast.api.v2.Application;
@@ -58,6 +59,7 @@ public class PollingWorker {
 
         state.didDiscovery = false;
 
+        post(StateEvent.Discover);
         ChromeCasts.get().clear(); // important! avoids duplicates
         ChromeCasts.restartDiscovery();
 
@@ -75,10 +77,12 @@ public class PollingWorker {
         Log.d(TAG, ">>> poll discovery: " + nb);
 
         if (nb == 0) {
+            post(StateEvent.DiscoveredZero);
             if (++state.nbDiscoveredNothing > Config.REDISCOVER_AFTER_NONE_FOUND_NB) {
                 state.didDiscovery = false;
             }
         } else {
+            post(StateEvent.DiscoveredSome);
             for (ChromeCast chromecast : chromecasts) {
                 Log.d(TAG, "- " + chromecast.getName());
             }
@@ -94,11 +98,16 @@ public class PollingWorker {
                 }
 
                 Log.d(TAG, ">>> connect");
-                chromecast.connect();
+                post(StateEvent.Connect);
+                try {
+                    chromecast.connect();
+                } catch (Throwable t) {
+                }
             } else state.nbNotConnected = 0;
 
             // Get device status
             if (chromecast.isConnected()) {
+                post(StateEvent.Connected);
                 Log.d(TAG, ">>> get status");
                 Status status = chromecast.getStatus();
                 if (status != null) {
@@ -126,23 +135,29 @@ public class PollingWorker {
                     );
                     if (!info.equals(lastInfo)) {
                         lastInfo = info;
-                        EventBus.getDefault().post(new ChromecastInfoEvent(info));
+                        post(new ChromecastInfoEvent(info));
                     }
                 }
             } else {
-                if (++state.nbNotConnected > Config.REDISCOVER_AFTER_NOT_CONNECTED_NB)
+                Log.d(TAG, ">>> not connected " + state.nbNotConnected);
+                post(StateEvent.NotConnected);
+                if (++state.nbNotConnected > Config.REDISCOVER_AFTER_NOT_CONNECTED_NB) {
                     state.didDiscovery = false;
+                }
             }
         }
     }
 
-
+    private void post(Object o) {
+        EventBus.getDefault().post(o);
+    }
     public void onEventBackgroundThread(PauseEvent event) {
         state.paused = true;
     }
 
     public void onEventBackgroundThread(ResumeEvent event) {
         state.paused = false;
+        lastInfo = null; // will force resending ChromecastInfoEvent
     }
 
 }

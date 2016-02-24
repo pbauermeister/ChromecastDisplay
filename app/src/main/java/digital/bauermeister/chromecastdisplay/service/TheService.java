@@ -8,7 +8,6 @@ import android.util.Log;
 
 import de.greenrobot.event.EventBus;
 import digital.bauermeister.chromecastdisplay.Config;
-import digital.bauermeister.chromecastdisplay.event.PollEvent;
 
 public class TheService extends Service {
     private static final String TAG = "TheService";
@@ -16,6 +15,9 @@ public class TheService extends Service {
     Handler handler = new Handler();
     private boolean enabled = true;
     private PollingWorker pollingWorker;
+
+    public class PollEvent {
+    }
 
     @Override
     public IBinder onBind(Intent intent) {

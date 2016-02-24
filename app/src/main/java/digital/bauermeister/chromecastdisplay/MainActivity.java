@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import de.greenrobot.event.EventBus;
 import digital.bauermeister.chromecastdisplay.event.from_worker.ChromecastInfoEvent;
+import digital.bauermeister.chromecastdisplay.event.from_worker.StateEvent;
 import digital.bauermeister.chromecastdisplay.event.to_worker.PauseEvent;
 import digital.bauermeister.chromecastdisplay.event.to_worker.ResumeEvent;
 
@@ -77,6 +78,32 @@ public class MainActivity extends AppCompatActivity {
 
         tv = (TextView) findViewById(R.id.stand_by);
         tv.setText(event.chromecastInfo.standBy.toString());
+    }
+
+    public void onEventMainThread(StateEvent event) {
+        String s = null;
+        switch (event) {
+            case Discover:
+                s = "d...";
+                break;
+            case DiscoveredZero:
+                s = "d?";
+                break;
+            case DiscoveredSome:
+                s = "d";
+                break;
+            case Connect:
+                s = "c...";
+                break;
+            case Connected:
+                s = "c";
+                break;
+            case NotConnected:
+                s = "c!";
+                break;
+        }
+        TextView tv = (TextView) findViewById(R.id.state);
+        tv.setText(s);
     }
 
     private String mkText(String text) {
