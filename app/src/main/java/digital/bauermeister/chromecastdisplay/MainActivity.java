@@ -1,10 +1,10 @@
 package digital.bauermeister.chromecastdisplay;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.TextView;
 
 import de.greenrobot.event.EventBus;
 import digital.bauermeister.chromecastdisplay.event.from_worker.ChromecastInfoEvent;
@@ -16,13 +16,22 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+    private Typeface tf;
+    private TextAutoscrollView chromecastNameTv;
+    private TextAutoscrollView appNameNameTv;
+    private TextAutoscrollView statusTextTv;
+    private TextAutoscrollView audioLevelTv;
+    private TextAutoscrollView audioMutedTv;
+    private TextAutoscrollView standByTv;
+    private TextAutoscrollView stateTv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_fullscreen);
 
-        View mContentView = findViewById(R.id.fullscreen_content);
+        View contentView = findViewById(R.id.fullscreen_content);
 
         // Hide UI first
         ActionBar actionBar = getSupportActionBar();
@@ -30,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             actionBar.hide();
         }
 
-        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+        contentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -38,6 +47,38 @@ public class MainActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
         EventBus.getDefault().register(this);
+
+        tf = Typeface.createFromAsset(getAssets(),
+//                "fonts/MUSICNET.ttf" // KO
+//                "fonts/PICHSIM_.ttf" // KO
+//                "fonts/TRANGA__.TTF" // KO
+//                "fonts/PICGRID_.ttf" // KO
+//                "fonts/PICHXPL_.ttf" // No
+//                "fonts/PICMOR__.ttf" // No
+//                "fonts/Digital Dust.otf" // sososo
+//                "fonts/EHSMB.TTF" // sososo
+//                "fonts/LEDBDREV.TTF" // soso
+//                "fonts/LEDBOARD.TTF" // soso
+//                "fonts/Crashed Scoreboard.ttf" // sososo
+//                "fonts/PICAHMS_.ttf" // soso
+//                "fonts/LEDSimulator.ttf" // Soso
+//                "fonts/TPF Display.ttf" // Soso
+//                "fonts/PICAHMR_.ttf" // so
+
+                "fonts/LLPIXEL3.ttf" // ***-
+//                "fonts/Clubland.ttf" // ****
+//                "fonts/Famirids.ttf" // ***-
+//                "fonts/TRANA___.TTF" // **--
+//                "fonts/PICHABS_.ttf" // *---
+        );
+
+        chromecastNameTv = (TextAutoscrollView) findViewById(R.id.chromecast_name);
+        appNameNameTv = (TextAutoscrollView) findViewById(R.id.app_name);
+        statusTextTv = (TextAutoscrollView) findViewById(R.id.status_text);
+        audioLevelTv = (TextAutoscrollView) findViewById(R.id.audio_level);
+        audioMutedTv = (TextAutoscrollView) findViewById(R.id.audio_muted);
+        standByTv = (TextAutoscrollView) findViewById(R.id.stand_by);
+        stateTv = (TextAutoscrollView) findViewById(R.id.state);
     }
 
 
@@ -60,24 +101,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onEventMainThread(ChromecastInfoEvent event) {
-        TextView tv;
-        tv = (TextView) findViewById(R.id.chromecast_name);
-        tv.setText(event.chromecastInfo.chromecastName);
-
-        tv = (TextView) findViewById(R.id.app_name);
-        tv.setText(event.chromecastInfo.appName);
-
-        tv = (TextView) findViewById(R.id.status_text);
-        tv.setText(mkText(event.chromecastInfo.statusText));
-
-        tv = (TextView) findViewById(R.id.audio_level);
-        tv.setText(event.chromecastInfo.audioLevel.toString());
-
-        tv = (TextView) findViewById(R.id.audio_muted);
-        tv.setText(event.chromecastInfo.audioMuted.toString());
-
-        tv = (TextView) findViewById(R.id.stand_by);
-        tv.setText(event.chromecastInfo.standBy.toString());
+        chromecastNameTv.setText2(event.chromecastInfo.chromecastName); //+ " - The quick brown fox jumps over the lazy dog");
+        appNameNameTv.setText2(event.chromecastInfo.appName);
+        statusTextTv.setText2(mkText(event.chromecastInfo.statusText));
+        audioLevelTv.setText2(event.chromecastInfo.audioLevel.toString());
+        audioMutedTv.setText2(event.chromecastInfo.audioMuted ? "Mute" : "<)");
+        standByTv.setText2(event.chromecastInfo.standBy ? "II" : "[>]");
     }
 
     public void onEventMainThread(StateEvent event) {
@@ -102,8 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 s = "c!";
                 break;
         }
-        TextView tv = (TextView) findViewById(R.id.state);
-        tv.setText(s);
+        stateTv.setText(s);
     }
 
     private String mkText(String text) {
