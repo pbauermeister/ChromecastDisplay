@@ -21,9 +21,13 @@ public class ChromecastInfo implements Comparable<ChromecastInfo> {
             float audioLevel,
             boolean audioMuted,
             boolean standBy) {
+        if(statusText.toLowerCase().startsWith(Config.STATUS_PRIFIX_TO_STRIP.toLowerCase())) {
+            statusText = statusText.substring(Config.STATUS_PRIFIX_TO_STRIP.length());
+        }
+
         this.chromecastName = chromecastName;
         this.appName = appName;
-        this.statusText = statusText;
+        this.statusText = statusText.trim();
         this.audioLevel = audioLevel;
         this.audioMuted = audioMuted;
         this.standBy = standBy;

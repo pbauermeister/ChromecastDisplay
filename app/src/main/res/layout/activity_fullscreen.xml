@@ -20,32 +20,49 @@
         android:orientation="vertical"
         android:padding="8dp">
 
-        <digital.bauermeister.chromecastdisplay.TextAutoscrollView
-            android:id="@+id/chromecast_name"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="2"
-            android:text="Scanning..."
-            android:gravity="center_vertical" />
+            android:orientation="horizontal">
 
-        <digital.bauermeister.chromecastdisplay.TextAutoscrollView
-            android:id="@+id/app_name"
+            <digital.bauermeister.chromecastdisplay.TextAutoscrollView
+                android:id="@+id/chromecast_name"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center_vertical"
+                android:text="Scanning..." />
+
+            <android.support.v4.widget.Space
+                android:layout_width="20dp"
+                android:layout_height="match_parent" />
+
+            <digital.bauermeister.chromecastdisplay.TextAutoscrollView
+                android:id="@+id/app_name"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center_vertical|right" />
+        </LinearLayout>
+
+        <android.support.v4.widget.Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2"
-            android:gravity="center_vertical" />
+            android:layout_weight="1" />
 
         <digital.bauermeister.chromecastdisplay.TextAutoscrollView
             android:id="@+id/status_text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="5"
-            android:text="---"
-            android:gravity="center_vertical" />
+            android:gravity="center_vertical"
+            android:text="---" />
 
         <android.support.v4.widget.Space
             android:layout_width="match_parent"
-            android:layout_height="10dp" />
+            android:layout_height="0dp"
+            android:layout_weight="2" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -58,39 +75,39 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:src="@drawable/ic_volume_00"
-                android:gravity="center" />
+                android:gravity="center"
+                android:src="@drawable/ic_volume_00" />
 
             <ImageView
                 android:id="@+id/audio_muted"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:src="@drawable/ic_volume_on"
-                android:gravity="center" />
+                android:gravity="center"
+                android:src="@drawable/ic_volume_on" />
 
             <ImageView
                 android:id="@+id/stand_by"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:src="@drawable/ic_standby_unknown"
-                android:gravity="center" />
+                android:gravity="center"
+                android:src="@drawable/ic_standby_unknown" />
 
             <ImageView
                 android:id="@+id/state"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_state_unknown"
                 android:layout_weight="1"
-                android:gravity="center" />
+                android:gravity="center"
+                android:src="@drawable/ic_state_unknown" />
 
             <ImageView
                 android:id="@+id/event"
                 android:layout_width="wrap_content"
-                android:src="@drawable/ic_idle"
                 android:layout_height="match_parent"
-                android:gravity="center" />
+                android:gravity="center"
+                android:src="@drawable/ic_idle" />
         </LinearLayout>
     </LinearLayout>
 

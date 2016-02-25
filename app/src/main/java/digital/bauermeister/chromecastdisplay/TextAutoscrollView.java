@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.widget.TextView;
 
@@ -98,7 +97,7 @@ public class TextAutoscrollView extends TextView {
         int delay;
         if (scrollYPosition < 0f) {
             scrollYPosition += scrollStep;
-            delay = Config.SCROLL_Y_DELAY_MS;
+            delay = scrollYPosition < 0 ? Config.SCROLL_Y_DELAY_MS : Config.SCROLL_TWEEN_PAUSE;
         } else {
             scrollXPosition -= scrollStep;
             if (scrollXPosition < -textWidth) {
