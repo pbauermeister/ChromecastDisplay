@@ -10,6 +10,7 @@ import de.greenrobot.event.EventBus;
 import digital.bauermeister.chromecastdisplay.ChromecastInfo;
 import digital.bauermeister.chromecastdisplay.Config;
 import digital.bauermeister.chromecastdisplay.event.from_worker.ChromecastInfoEvent;
+import digital.bauermeister.chromecastdisplay.event.from_worker.HeartBeatEvent;
 import digital.bauermeister.chromecastdisplay.event.from_worker.StateEvent;
 import digital.bauermeister.chromecastdisplay.event.to_worker.PauseEvent;
 import digital.bauermeister.chromecastdisplay.event.to_worker.ResumeEvent;
@@ -51,6 +52,7 @@ public class PollingWorker {
                 Log.e(TAG, "### " + t);
                 t.printStackTrace();
             }
+            post(HeartBeatEvent.Beat);
         }
     }
 
@@ -101,6 +103,8 @@ public class PollingWorker {
                 post(StateEvent.Connect);
                 try {
                     chromecast.connect();
+                    state.nbNotConnected = 0;
+                    return; // get status next time, for visual delay
                 } catch (Throwable t) {
                 }
             } else state.nbNotConnected = 0;
@@ -124,6 +128,10 @@ public class PollingWorker {
 
                     Log.i(TAG, ">>> +++++++ app.id      " + app.id);
                     Log.i(TAG, ">>> +++++++ app.name    " + app.name);
+//                    try {
+//                        Log.i(TAG, ">>> +++++++ customData  " + chromecast.getMediaStatus().customData);
+//                    } catch (Exception e) {
+//                    }
 
                     ChromecastInfo info = new ChromecastInfo(
                             chromecast.getName(),

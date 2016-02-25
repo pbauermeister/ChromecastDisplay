@@ -41,7 +41,13 @@ public class TextAutoscrollView extends TextView {
     }
 
     private void init() {
-        final Typeface tf = Typeface.createFromAsset(getContext().getAssets(), "fonts/LLPIXEL3.ttf");
+        Typeface tf = Typeface.createFromAsset(getContext().getAssets(),
+                "fonts/LLPIXEL3.ttf" // ***-
+//                "fonts/Clubland.ttf" // ****
+//                "fonts/Famirids.ttf" // ***-
+//                "fonts/TRANA___.TTF" // **--
+//                "fonts/PICHABS_.ttf" // *---
+        );
         setTypeface(tf);
         setSingleLine(true);
         post(new Runnable() {
