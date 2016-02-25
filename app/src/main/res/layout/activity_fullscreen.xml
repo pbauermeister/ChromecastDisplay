@@ -23,14 +23,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2"
+            android:layout_weight="5"
             android:orientation="horizontal">
 
             <digital.bauermeister.chromecastdisplay.TextAutoscrollView
                 android:id="@+id/chromecast_name"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="2"
+                android:layout_weight="3"
                 android:gravity="center_vertical"
                 android:text="Scanning..." />
 
@@ -49,25 +49,25 @@
         <android.support.v4.widget.Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="2" />
 
         <digital.bauermeister.chromecastdisplay.TextAutoscrollView
             android:id="@+id/status_text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="5"
+            android:layout_weight="10"
             android:gravity="center_vertical"
             android:text="---" />
 
         <android.support.v4.widget.Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2" />
+            android:layout_weight="3" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:orientation="horizontal">
 
             <ImageView
