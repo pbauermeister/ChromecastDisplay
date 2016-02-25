@@ -3,7 +3,6 @@ package digital.bauermeister.chromecastdisplay;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -85,14 +84,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onEventMainThread(ChromecastInfoEvent event) {
+        updateDisplay(event.chromecastInfo);
+    }
+
+    public void updateDisplay(ChromecastInfo info) {
         // texts
-        chromecastNameTv.setText2(event.chromecastInfo.chromecastName); //+ " - The quick brown fox jumps over the lazy dog");
-        appNameNameTv.setText2(event.chromecastInfo.appName);
-        statusTextTv.setText2(mkText(event.chromecastInfo.statusText));
+        chromecastNameTv.setText2(info.chromecastName); //+ " - The quick brown fox jumps over the lazy dog");
+        appNameNameTv.setText2(info.appName);
+        statusTextTv.setText2(mkText(info.statusText));
 
         // volume
-        if (event.chromecastInfo.audioLevel != audioLevel) {
-            audioLevel = event.chromecastInfo.audioLevel;
+        if (info.audioLevel != audioLevel) {
+            audioLevel = info.audioLevel;
             int level = Math.round(audioLevel * 10);
             switch (level) {
                 case 0:
@@ -132,15 +135,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // mute
-        if (audioMuted == null || !audioMuted.equals(event.chromecastInfo.audioMuted)) {
-            audioMuted = event.chromecastInfo.audioMuted;
+        if (audioMuted == null || !audioMuted.equals(info.audioMuted)) {
+            audioMuted = info.audioMuted;
             audioMutedIv.setImageResource(audioMuted ?
                     R.drawable.ic_volume_off : R.drawable.ic_volume_on);
         }
 
         // standbye
-        if (standBy == null || !standBy.equals(event.chromecastInfo.standBy)) {
-            standBy = event.chromecastInfo.standBy;
+        if (standBy == null || !standBy.equals(info.standBy)) {
+            standBy = info.standBy;
             standByIv.setImageResource(standBy ?
                     R.drawable.ic_pause : R.drawable.ic_play);
         }

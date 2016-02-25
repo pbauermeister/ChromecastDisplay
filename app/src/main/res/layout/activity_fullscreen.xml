@@ -24,22 +24,28 @@
             android:id="@+id/chromecast_name"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="3"
+            android:layout_weight="2"
+            android:text="Scanning..."
             android:gravity="center_vertical" />
 
         <digital.bauermeister.chromecastdisplay.TextAutoscrollView
             android:id="@+id/app_name"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="3"
+            android:layout_weight="2"
             android:gravity="center_vertical" />
 
         <digital.bauermeister.chromecastdisplay.TextAutoscrollView
             android:id="@+id/status_text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="3"
+            android:layout_weight="5"
+            android:text="---"
             android:gravity="center_vertical" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,6 +58,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:src="@drawable/ic_volume_00"
                 android:gravity="center" />
 
             <ImageView
@@ -59,6 +66,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:src="@drawable/ic_volume_on"
                 android:gravity="center" />
 
             <ImageView
@@ -66,18 +74,21 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:src="@drawable/ic_standby_unknown"
                 android:gravity="center" />
 
             <ImageView
                 android:id="@+id/state"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:src="@drawable/ic_state_unknown"
                 android:layout_weight="1"
                 android:gravity="center" />
 
             <ImageView
                 android:id="@+id/event"
                 android:layout_width="wrap_content"
+                android:src="@drawable/ic_idle"
                 android:layout_height="match_parent"
                 android:gravity="center" />
         </LinearLayout>

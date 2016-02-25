@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.widget.TextView;
 
@@ -12,8 +13,7 @@ import android.widget.TextView;
  */
 public class TextAutoscrollView extends TextView {
 
-    private final static int SCROLL_X_DELAY_MS = 1000 / 20;
-    private final static int SCROLL_Y_DELAY_MS = 1000 / 10;
+    private static final String TAG = "TextAutoscrollView";
 
     private float textHeight = 1f;
     private float textWidth;
@@ -98,14 +98,14 @@ public class TextAutoscrollView extends TextView {
         int delay;
         if (scrollYPosition < 0f) {
             scrollYPosition += scrollStep;
-            delay = SCROLL_Y_DELAY_MS;
+            delay = Config.SCROLL_Y_DELAY_MS;
         } else {
             scrollXPosition -= scrollStep;
             if (scrollXPosition < -textWidth) {
                 scrollXPosition = 0;
                 scrollYPosition = -getHeight();
             }
-            delay = SCROLL_X_DELAY_MS;
+            delay = Config.SCROLL_X_DELAY_MS;
         }
         setPadding((int) scrollXPosition, (int) -scrollYPosition, getPaddingRight(), getPaddingBottom());
         postDelayed(scroller, delay);
