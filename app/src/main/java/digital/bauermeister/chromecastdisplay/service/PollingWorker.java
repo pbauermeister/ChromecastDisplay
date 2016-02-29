@@ -11,6 +11,7 @@ import digital.bauermeister.chromecastdisplay.ChromecastInfo;
 import digital.bauermeister.chromecastdisplay.Config;
 import digital.bauermeister.chromecastdisplay.event.from_worker.ChromecastInfoEvent;
 import digital.bauermeister.chromecastdisplay.event.from_worker.HeartBeatEvent;
+import digital.bauermeister.chromecastdisplay.event.from_worker.NbEvent;
 import digital.bauermeister.chromecastdisplay.event.from_worker.StateEvent;
 import digital.bauermeister.chromecastdisplay.event.to_worker.PauseEvent;
 import digital.bauermeister.chromecastdisplay.event.to_worker.ResumeEvent;
@@ -30,6 +31,7 @@ public class PollingWorker {
 
     private State state = new State();
     private ChromecastInfo lastInfo = null;
+    private int prevNb = 0;
 
     public PollingWorker() {
         EventBus.getDefault().register(this);
@@ -78,13 +80,28 @@ public class PollingWorker {
         int nb = chromecasts.size();
         Log.d(TAG, ">>> poll discovery: " + nb);
 
+        switch (nb) {
+            case 0:
+                post(NbEvent.Zero);
+                break;
+            case 1:
+                post(NbEvent.One);
+                break;
+            default:
+                post(NbEvent.Many);
+                break;
+        }
+
         if (nb == 0) {
             post(StateEvent.DiscoveredZero);
             if (++state.nbDiscoveredNothing > Config.REDISCOVER_AFTER_NONE_FOUND_NB) {
                 state.didDiscovery = false;
             }
-        } else {
+            prevNb = nb;
+        } else if (nb > prevNb) {
             post(StateEvent.DiscoveredSome);
+            prevNb = nb;
+        } else {
             for (ChromeCast chromecast : chromecasts) {
                 Log.d(TAG, "- " + chromecast.getName());
             }
@@ -116,18 +133,22 @@ public class PollingWorker {
                 Status status = chromecast.getStatus();
                 if (status != null) {
                     Application app = status.getRunningApp();
-                    Log.i(TAG, ">>> +++++++++++++++++++ " + (app == null ? "None" : app.name + " - " + app.statusText));
-                    Log.i(TAG, ">>> +++++++ addr        " + chromecast.getAddress());
-                    Log.i(TAG, ">>> +++++++ app         " + chromecast.getApplication());
-                    Log.i(TAG, ">>> +++++++ appsUrl     " + chromecast.getAppsURL());
+                    Log.i(TAG, ">>> +++++++++++++++++++");
+                    Log.i(TAG, ">>> +++ chromecast.getName()         " + chromecast.getName());
+                    Log.i(TAG, ">>> +++ chromecast.getAddress()      " + chromecast.getAddress());
+                    Log.i(TAG, ">>> +++ chromecast.getPort()         " + chromecast.getPort());
+
+                    Log.i(TAG, ">>> +++ chromecast.getApplication()  " + chromecast.getApplication());
+                    Log.i(TAG, ">>> +++ chromecast.getAppsURL()      " + chromecast.getAppsURL());
 //                    Log.i(TAG, ">>> +++++++ runningApp  " + chromecast.getRunningApp());
-                    Log.i(TAG, ">>> +++++++ port        " + chromecast.getPort());
 
-                    Log.i(TAG, ">>> +++++++ volume      " + status.volume);
-                    Log.i(TAG, ">>> +++++++ standBy     " + status.standBy);
+                    Log.i(TAG, ">>> +++ status.volume                " + status.volume);
+                    Log.i(TAG, ">>> +++ status.standBy               " + status.standBy);
 
-                    Log.i(TAG, ">>> +++++++ app.id      " + app.id);
-                    Log.i(TAG, ">>> +++++++ app.name    " + app.name);
+                    Log.i(TAG, ">>> +++ app.name                     " + (app == null ? "-None-" : app.name));
+                    Log.i(TAG, ">>> +++ app.id                       " + (app == null ? "-None-" : app.id));
+                    Log.i(TAG, ">>> +++ app.statusText               " + (app == null ? "-None-" : app.statusText));
+
 //                    try {
 //                        Log.i(TAG, ">>> +++++++ customData  " + chromecast.getMediaStatus().customData);
 //                    } catch (Exception e) {

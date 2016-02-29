@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import de.greenrobot.event.EventBus;
 import digital.bauermeister.chromecastdisplay.event.from_worker.ChromecastInfoEvent;
 import digital.bauermeister.chromecastdisplay.event.from_worker.HeartBeatEvent;
+import digital.bauermeister.chromecastdisplay.event.from_worker.NbEvent;
 import digital.bauermeister.chromecastdisplay.event.from_worker.StateEvent;
 import digital.bauermeister.chromecastdisplay.event.to_worker.PauseEvent;
 import digital.bauermeister.chromecastdisplay.event.to_worker.ResumeEvent;
@@ -26,11 +27,13 @@ public class MainActivity extends AppCompatActivity {
     private ImageView standByIv;
     private ImageView stateIv;
     private ImageView eventIv;
+    private ImageView nbIv;
 
     float audioLevel = -1f;
     Boolean audioMuted = null;
     Boolean standBy = null;
     StateEvent state = null;
+    NbEvent nb = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         standByIv = (ImageView) findViewById(R.id.stand_by);
         stateIv = (ImageView) findViewById(R.id.state);
         eventIv = (ImageView) findViewById(R.id.event);
+        nbIv = (ImageView) findViewById(R.id.nb);
     }
 
 
@@ -174,6 +178,22 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+
+    public void onEventMainThread(NbEvent event) {
+        if (nb == event) return;
+        nb = event;
+
+        switch (event) {
+            case Zero:
+            case One:
+                nbIv.setImageResource(R.drawable.ic_nb);
+                break;
+            case Many:
+                nbIv.setImageResource(R.drawable.ic_nb_many);
+                break;
+        }
+    }
+
 
     private String mkText(String text) {
         return (text == null || text.length() == 0) ? "---" : text;

@@ -5,6 +5,9 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -22,6 +25,7 @@ public class TextAutoscrollView extends TextView {
     private float scrollXPosition;
     private float scrollYPosition;
     private float scrollStep;
+    private int initialGravity;
 
 
     public TextAutoscrollView(Context context) {
@@ -49,6 +53,7 @@ public class TextAutoscrollView extends TextView {
         );
         setTypeface(tf);
         setSingleLine(true);
+        initialGravity = getGravity();
         post(new Runnable() {
             @Override
             public void run() {
@@ -72,10 +77,16 @@ public class TextAutoscrollView extends TextView {
         removeCallbacks(scroller);
         textWidth = getTextWidth(text);
         if (textWidth > getWidth()) {
+            // scroll
             scrollXPosition = 0;
             scrollYPosition = -getHeight();
             scrollStep = textHeight / 8f;
+            setGravity((initialGravity & ~Gravity.RIGHT) | Gravity.LEFT);
             scroll();
+        } else {
+            // no scroll
+            setGravity(initialGravity);
+            setPadding(0, 0, getPaddingRight(), getPaddingBottom());
         }
     }
 

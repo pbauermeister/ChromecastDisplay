@@ -94,13 +94,26 @@
                 android:gravity="center"
                 android:src="@drawable/ic_standby_unknown" />
 
-            <ImageView
-                android:id="@+id/state"
+            <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/ic_state_unknown" />
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/state"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_state_unknown" />
+
+                <ImageView
+                    android:id="@+id/nb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_nb" />
+            </FrameLayout>
 
             <ImageView
                 android:id="@+id/event"
