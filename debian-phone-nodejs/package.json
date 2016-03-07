@@ -1,0 +1,16 @@
+{
+  "name": "chromecast-display",
+  "version": "0.0.0",
+  "description": "Script that monitors Chromcasts status",
+  "main": "chromecast-display.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "chromecast-display.js"
+  },
+  "author": "P. Bauermeister",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "chromecast": "0.0.6",
+    "castv2": "0.1.6"
+  }
+}
