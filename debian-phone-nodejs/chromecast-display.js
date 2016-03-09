@@ -18,9 +18,9 @@ var DISCOVERY_DELAY_MS = 20 * 1000;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-function out(kind, value) {
-    var output = {};
-    output[kind] = value;
+function out(event, key, value) {
+    var output = { 'event': event };
+    if (key) output[key] = value;
     console.log(JSON.stringify(output));
 }
 
@@ -69,7 +69,7 @@ chromecast.on('device', function(device){
     var name = device.name;
     var xname = name + "@" + ref;
 
-    out("DISCOVERED", device);
+    out("DISCOVERED", "device", device);
     var seq = (new Date).getTime() % 10000;
     var client = new Client();
 
@@ -79,7 +79,7 @@ chromecast.on('device', function(device){
 	// Handler for connected device
 	///////////////////////////////////////////////////////////////////////
 
-	out("CONNECTED", device);
+	out("CONNECTED", "device", device);
 	var nbSent = 0;
 	var nbReceived = 0;
 
@@ -109,7 +109,7 @@ chromecast.on('device', function(device){
 	    }
 	    else {
 		// ping
-	        out("GET_STATUS", name + ": " + nbSent + ">" + nbReceived);
+	        out("GET_STATUS", "request", {name:name, nbSent:nbSent, nbReceived:nbReceived});
 		++nbSent;
 	        receiver.send({ "type": "GET_STATUS", "requestId": ++seq });
 	    }
@@ -120,7 +120,7 @@ chromecast.on('device', function(device){
 	    if(data.type = 'RECEIVER_STATUS') {
 		++nbReceived;
 		var status = { "device": device, "data": data };
-		out("STATUS", status);
+		out("STATUS", "status", status);
 	    }
 	});
 
@@ -133,20 +133,20 @@ chromecast.on('device', function(device){
 });
 
 // initial discover
-out("DISCOVERING", null);
+out("DISCOVERING");
 chromecast.discover();
 
 // restart on error
 process.on('uncaughtException', function (err) {
-    out("ERROR", err);
+    out("ERROR", "error", err);
     console.error(err.stack);
     instances = {};
-    out("DISCOVERING", null);
+    out("DISCOVERING");
     chromecast.discover();
 });
 
 // periodic re-discover
 setInterval(function() {
-    out("DISCOVERING", null);
+    out("DISCOVERING");
     chromecast.discover();
 }, DISCOVERY_DELAY_MS);
