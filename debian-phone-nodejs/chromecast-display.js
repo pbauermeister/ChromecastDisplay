@@ -18,8 +18,11 @@ var DISCOVERY_DELAY_MS = 20 * 1000;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-var log = console.warn;
-var out = console.log;
+function out(kind, value) {
+    var output = {};
+    output[kind] = value;
+    console.log(JSON.stringify(output));
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // DEVICE MANAGEMENT
@@ -66,10 +69,8 @@ chromecast.on('device', function(device){
     var name = device.name;
     var xname = name + "@" + ref;
 
-    log('===== discovered ' + host + ' ' + xname);
-    log(JSON.stringify(device));
+    out("DISCOVERED", device);
     var seq = (new Date).getTime() % 10000;
-    log('SEQ ' + seq);
     var client = new Client();
 
     client.connect(host, function() {
@@ -78,7 +79,7 @@ chromecast.on('device', function(device){
 	// Handler for connected device
 	///////////////////////////////////////////////////////////////////////
 
-	log('===== connected to ' + host + ' ' + xname);
+	out("CONNECTED", device);
 	var nbSent = 0;
 	var nbReceived = 0;
 
@@ -108,7 +109,7 @@ chromecast.on('device', function(device){
 	    }
 	    else {
 		// ping
-	        log("-ping " + xname + " - " + nbSent + ">" + nbReceived);
+	        out("GET_STATUS", name + ": " + nbSent + ">" + nbReceived);
 		++nbSent;
 	        receiver.send({ "type": "GET_STATUS", "requestId": ++seq });
 	    }
@@ -118,11 +119,8 @@ chromecast.on('device', function(device){
 	receiver.on('message', function(data, broadcast) {
 	    if(data.type = 'RECEIVER_STATUS') {
 		++nbReceived;
-		log('===== message from ' + xname);
-		log(" => data " + JSON.stringify(data));
-
 		var status = { "device": device, "data": data };
-		out(JSON.stringify(status));
+		out("STATUS", status);
 	    }
 	});
 
@@ -135,19 +133,20 @@ chromecast.on('device', function(device){
 });
 
 // initial discover
+out("DISCOVERING", null);
 chromecast.discover();
 
 // restart on error
 process.on('uncaughtException', function (err) {
-    console.error('##### ERROR');
+    out("ERROR", err);
     console.error(err.stack);
     instances = {};
+    out("DISCOVERING", null);
     chromecast.discover();
 });
 
 // periodic re-discover
 setInterval(function() {
-    log('##### DISCOVER');
+    out("DISCOVERING", null);
     chromecast.discover();
 }, DISCOVERY_DELAY_MS);
-
