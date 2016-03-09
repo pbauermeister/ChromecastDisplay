@@ -8,11 +8,11 @@ loopno=254
 loopdev=/dev/block/loop$loopno
 mntpt=/data/local/linux-debian
 sdcard=$(readlink -f /sdcard)
-lockfile=/data/local/tmp/debian.started
 
 if [ "$arg" == "-h" ] ; then
     echo "Usage: $0 [OPTION]"
     echo "With no argument, enter a shell under Debian."
+    echo "Must be run as root."
     echo
     echo "Options:"
     echo "  -h          show this help"
@@ -34,13 +34,12 @@ if [ "$arg" == "unmount" ] ; then
     echo Removing loop dev $loopdev ...
     losetup -d $loopdev
     rm $loopdev
-    rm -f $lockfile
     echo Done.
     exit 0;
 fi
 
 if [ "$arg" == "mount" ] ; then
-    if [ -f $lockfile ] ; then
+    if [ -b $loopdev ] ; then
         echo "Debian seems already initialized."
         exit 0;
     fi
@@ -63,8 +62,7 @@ if [ "$arg" == "mount" ] ; then
     echo mount -o bind $sdcard $mntpt/media/sdcard ...
     mount -o bind $sdcard $mntpt/media/sdcard
 
-    touch $lockfile
-    echo "Debian is ready. Call $0 without parameters to enter shell."
+    echo "Debian is ready. Call $0 (as root) without parameters to enter shell."
 else
     export HOME=/root
     export USER=root
@@ -78,7 +76,7 @@ else
         echo Welcome to Debian!
         chroot $mntpt /bin/bash -l || (
             if [ $? = 127 ] ; then
-                echo "Run '$0 mount' to initialize Debian."
+                echo "Run '$0 mount' (as root) to initialize Debian."
             fi  
         )
     fi
