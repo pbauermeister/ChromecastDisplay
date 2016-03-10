@@ -1,5 +1,6 @@
 package digital.bauermeister.chromecastdisplay;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -211,4 +212,18 @@ public class MainActivity extends AppCompatActivity {
             eventIv.setImageResource(R.drawable.ic_idle);
         }
     };
+
+    /*
+     * The EventBus allows other processes to execute code in the UI (aka Main) thread
+     */
+
+    public static abstract class RunnableInActivity implements Runnable {
+        public Activity activity;
+    }
+
+    public void onEventMainThread(RunnableInActivity runnable) {
+        // we are in the UI thread
+        runnable.activity = MainActivity.this;
+        runnable.run();
+    }
 }

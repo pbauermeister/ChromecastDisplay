@@ -1,4 +1,4 @@
-package digital.bauermeister.chromecastdisplay.service;
+package digital.bauermeister.chromecastdisplay.service_litvak;
 
 import android.util.Log;
 

@@ -25,9 +25,12 @@
         </activity>
 
         <service
-            android:name=".service.TheService"
-            android:exported="false"
-            android:label="TheService" />
+            android:name=".service_litvak.LitvakBasedService"
+            android:exported="false" />
+
+        <service
+            android:name=".service_nodejs.NodejsBasedService"
+            android:exported="false" />
 
     </application>
 

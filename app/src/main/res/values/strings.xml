@@ -3,4 +3,10 @@
 
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="error_not_rooted_message">Error: this device is not rooted. Cannot operate.</string>
+    <string name="error_init_debian_message">Error: Could not init Debian.</string>
+    <string name="error_no_nodejs_program_message">Error: No chromecast-display.js script found.</string>
+    <string name="error_nodejs_program_message">Error: Error while running chromecast-display.js script.</string>
+
 </resources>

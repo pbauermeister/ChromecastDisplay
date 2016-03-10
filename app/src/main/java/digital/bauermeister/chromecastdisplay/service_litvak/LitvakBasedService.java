@@ -1,4 +1,4 @@
-package digital.bauermeister.chromecastdisplay.service;
+package digital.bauermeister.chromecastdisplay.service_litvak;
 
 import android.app.Service;
 import android.content.Intent;
@@ -9,7 +9,7 @@ import android.util.Log;
 import de.greenrobot.event.EventBus;
 import digital.bauermeister.chromecastdisplay.Config;
 
-public class TheService extends Service {
+public class LitvakBasedService extends Service {
     private static final String TAG = "TheService";
 
     Handler handler = new Handler();
