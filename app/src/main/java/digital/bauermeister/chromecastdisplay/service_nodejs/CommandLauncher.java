@@ -30,8 +30,8 @@ public class CommandLauncher extends ShellCommand {
         );
     }
 
-    protected void handleLine(String line) {
-        Log.d(TAG, ">>> " + line);
-    }
+//    protected void handleLine(String line) {
+//        Log.d(TAG, ">>> " + line);
+//    }
 
 }
