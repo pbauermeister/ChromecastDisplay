@@ -30,8 +30,10 @@ public class CommandLauncher extends ShellCommand {
         );
     }
 
-//    protected void handleLine(String line) {
-//        Log.d(TAG, ">>> " + line);
-//    }
+    protected void handleLine(String line) {
+        super.handleLine(line);
+        EventData event = EventParser.parseLine(line);
+        Log.d(TAG, "XXXXX " + event);
+    }
 
 }

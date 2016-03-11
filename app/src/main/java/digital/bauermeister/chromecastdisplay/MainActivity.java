@@ -8,12 +8,12 @@ import android.view.View;
 import android.widget.ImageView;
 
 import de.greenrobot.event.EventBus;
-import digital.bauermeister.chromecastdisplay.event.from_worker.ChromecastInfoEvent;
-import digital.bauermeister.chromecastdisplay.event.from_worker.HeartBeatEvent;
-import digital.bauermeister.chromecastdisplay.event.from_worker.NbEvent;
-import digital.bauermeister.chromecastdisplay.event.from_worker.StateEvent;
-import digital.bauermeister.chromecastdisplay.event.to_worker.PauseEvent;
-import digital.bauermeister.chromecastdisplay.event.to_worker.ResumeEvent;
+import digital.bauermeister.chromecastdisplay.bus_event.from_worker.ChromecastInfoEvent;
+import digital.bauermeister.chromecastdisplay.bus_event.from_worker.HeartBeatEvent;
+import digital.bauermeister.chromecastdisplay.bus_event.from_worker.NbEvent;
+import digital.bauermeister.chromecastdisplay.bus_event.from_worker.StateEvent;
+import digital.bauermeister.chromecastdisplay.bus_event.to_worker.PauseEvent;
+import digital.bauermeister.chromecastdisplay.bus_event.to_worker.ResumeEvent;
 
 public class MainActivity extends AppCompatActivity {
 
