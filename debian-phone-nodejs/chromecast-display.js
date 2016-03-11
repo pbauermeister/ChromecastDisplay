@@ -109,7 +109,7 @@ chromecast.on('device', function(device){
 	    }
 	    else {
 		// ping
-	        out("GET_STATUS", "request", {name:name, nbSent:nbSent, nbReceived:nbReceived});
+	        out("GET_STATUS", "get_status_request", {name:name, nbSent:nbSent, nbReceived:nbReceived});
 		++nbSent;
 	        receiver.send({ "type": "GET_STATUS", "requestId": ++seq });
 	    }
@@ -117,10 +117,11 @@ chromecast.on('device', function(device){
 
 	// display receiver status updates 
 	receiver.on('message', function(data, broadcast) {
-	    if(data.type = 'RECEIVER_STATUS') {
+	    if(data.type) {
 		++nbReceived;
-		var status = { "device": device, "data": data };
-		out("STATUS", "status", status);
+		var message = { "device": device, "type": data.type };
+		message[data.type.toLowerCase()] = data;
+		out("MESSAGE", "message", message);
 	    }
 	});
 
