@@ -28,12 +28,14 @@ public class ShellCommand {
     protected String error = null;
     protected Integer returnCode = null;
 
+    private static int cmdNr = 0;
+
     public static boolean isRooted() {
         return new ShellCommand().executeOk("su", "-c", "true");
     }
 
     public String toString() {
-        return "cmd=[" + command + "]";
+        return "cmd=[" + cmdNr + "]";
     }
 
     public int execute(String... cmd) {
@@ -47,11 +49,12 @@ public class ShellCommand {
 
     private boolean start(String... cmd) {
         // for debug
+        cmdNr++;
         for (String e : cmd) {
             if (command.length() > 0) command += "|";
             command += e;
         }
-        Log.d(TAG, "Launching shell command: [" + command + "]");
+        Log.d(TAG, "Launching shell " + toString() + " > [" + command + "]");
 
         // run
         try {
@@ -136,8 +139,8 @@ public class ShellCommand {
             Log.e(TAG, toString() + " ERROR finish() readLine: " + e);
             e.printStackTrace();
         }
-        Log.e(TAG, toString() + " err: " + error);
-        Log.e(TAG, toString() + " ret: " + returnCode);
+        Log.v(TAG, toString() + " err: " + error);
+        Log.v(TAG, toString() + " ret: " + returnCode);
 
         // close all
         tryCloseOutput(stdinWriteStream);
@@ -170,5 +173,6 @@ public class ShellCommand {
 
     // Default implementation
     protected void handleLine(String line) {
+        Log.v(TAG, toString() + " >>> " + line);
     }
 }
