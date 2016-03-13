@@ -98,6 +98,10 @@ public class MainActivity extends AppCompatActivity {
         connectedMp = MediaPlayer.create(this, R.raw.snd42796__digifishmusic__sonar_ping);
         notConnectedMp = MediaPlayer.create(this, R.raw.disconnected);
 
+        // tweaks
+        discoverMp.setVolume(0.1f, 0.1f);
+
+        // bg initial noise
         noiseMp.setLooping(true);
         noiseMp.setVolume(0.05f, 0.05f);
         noiseMp.start();
@@ -258,6 +262,7 @@ public class MainActivity extends AppCompatActivity {
         contentView.postDelayed(backToIdle, Config.HEARTBEAT_DELAY_MS);
 
         if (!heartbeatMp.isPlaying()) {
+            heartbeatMp.release();
             heartbeatMp = MediaPlayer.create(this, R.raw.radio_beep);
             heartbeatMp.start();
         }
