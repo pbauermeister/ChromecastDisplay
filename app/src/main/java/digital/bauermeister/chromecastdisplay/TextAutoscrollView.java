@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.TextView;
@@ -84,9 +83,16 @@ public class TextAutoscrollView extends TextView {
             setGravity((initialGravity & ~Gravity.RIGHT) | Gravity.LEFT);
             scroll();
         } else {
-            // no scroll
-            setGravity(initialGravity);
-            setPadding(0, 0, getPaddingRight(), getPaddingBottom());
+//            // no scroll
+//            setGravity(initialGravity);
+//            setPadding(0, 0, getPaddingRight(), getPaddingBottom());
+
+            // scroll
+            scrollXPosition = 0;
+            scrollYPosition = -getHeight();
+            scrollStep = textHeight / 8f;
+            setGravity((initialGravity & ~Gravity.RIGHT) | Gravity.LEFT);
+            scroll();
         }
     }
 
@@ -109,7 +115,15 @@ public class TextAutoscrollView extends TextView {
         if (scrollYPosition < 0f) {
             scrollYPosition += scrollStep;
             delay = scrollYPosition < 0 ? Config.SCROLL_Y_DELAY_MS : Config.SCROLL_TWEEN_PAUSE;
+
+            // no horiz scrolling needed?
+            if (scrollYPosition > 0 && textWidth <= getWidth()) {
+                setGravity(initialGravity);
+                setPadding(0, 0, getPaddingRight(), getPaddingBottom());
+                return;
+            }
         } else {
+            // horiz scrolling
             scrollXPosition -= scrollStep;
             if (scrollXPosition < -textWidth) {
                 scrollXPosition = 0;
@@ -117,8 +131,9 @@ public class TextAutoscrollView extends TextView {
                 setTextColor(0xff << 24);
             }
 
+            // fading
             float remWidth = scrollXPosition + textWidth;
-            if (remWidth < getWidth()) {
+            if (remWidth < getWidth() && textWidth > getWidth()) {
                 float fade = remWidth / getWidth();
                 int alpha = (int) (fade * 0xff + 0.5f);
                 setTextColor(alpha << 24);
@@ -127,7 +142,7 @@ public class TextAutoscrollView extends TextView {
             delay = Config.SCROLL_X_DELAY_MS;
         }
         setPadding((int) scrollXPosition, (int) -scrollYPosition, getPaddingRight(), getPaddingBottom());
-        postDelayed(scroller, delay);
+        if (scrollStep != 0) postDelayed(scroller, delay);
     }
 }
 
