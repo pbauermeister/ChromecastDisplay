@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import de.greenrobot.event.EventBus;
 import digital.bauermeister.chromecastdisplay.bus_event.from_worker.ChromecastInfoEvent;
 import digital.bauermeister.chromecastdisplay.bus_event.from_worker.HeartBeatEvent;
-import digital.bauermeister.chromecastdisplay.bus_event.from_worker.NbEvent;
 import digital.bauermeister.chromecastdisplay.bus_event.from_worker.StateEvent;
 import digital.bauermeister.chromecastdisplay.bus_event.to_worker.PauseEvent;
 import digital.bauermeister.chromecastdisplay.bus_event.to_worker.ResumeEvent;
@@ -26,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView audioLevelIv;
     private ImageView audioMutedIv;
     private ImageView standByIv;
+    private ImageView discoverIv;
     private ImageView stateIv;
     private ImageView eventIv;
     private ImageView nbIv;
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     Boolean audioMuted = null;
     Boolean standBy = null;
     StateEvent state = null;
-    NbEvent nb = null;
+    boolean first = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         audioLevelIv = (ImageView) findViewById(R.id.audio_level);
         audioMutedIv = (ImageView) findViewById(R.id.audio_muted);
         standByIv = (ImageView) findViewById(R.id.stand_by);
+        discoverIv = (ImageView) findViewById(R.id.discover);
         stateIv = (ImageView) findViewById(R.id.state);
         eventIv = (ImageView) findViewById(R.id.event);
         nbIv = (ImageView) findViewById(R.id.nb);
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onEventMainThread(ChromecastInfoEvent event) {
+        resetIfFirstTime();
         updateDisplay(event.chromecastInfo);
     }
 
@@ -154,19 +156,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void resetIfFirstTime() {
+        if (!first) return;
+        first = true;
+        audioLevelIv.setImageResource(R.drawable.ic_volume_00);
+        audioMutedIv.setImageResource(R.drawable.ic_volume_on);
+        standByIv.setImageResource(R.drawable.ic_play);
+        discoverIv.setImageResource(R.drawable.ic_discover_idle);
+        stateIv.setImageResource(R.drawable.ic_state_unknown);
+        nbIv.setImageResource(R.drawable.ic_nb);
+    }
+
     public void onEventMainThread(StateEvent event) {
+        resetIfFirstTime();
+
         if (state == event) return;
         state = event;
 
         switch (event) {
             case Discover:
-                stateIv.setImageResource(R.drawable.ic_state_discover);
-                break;
-            case DiscoveredZero:
-                stateIv.setImageResource(R.drawable.ic_state_discovered_zero);
-                break;
-            case DiscoveredSome:
-                stateIv.setImageResource(R.drawable.ic_state_discovered_some);
+                discoverIv.setImageResource(R.drawable.ic_discover_ongoing);
                 break;
             case Connect:
                 stateIv.setImageResource(R.drawable.ic_state_connect);
@@ -178,29 +187,19 @@ public class MainActivity extends AppCompatActivity {
                 stateIv.setImageResource(R.drawable.ic_state_connected_not);
                 break;
         }
-    }
 
-    public void onEventMainThread(NbEvent event) {
-        if (nb == event) return;
-        nb = event;
-
-        switch (event) {
-            case Zero:
-            case One:
-                nbIv.setImageResource(R.drawable.ic_nb);
-                break;
-            case Many:
-                nbIv.setImageResource(R.drawable.ic_nb_many);
-                break;
+        if (event != StateEvent.Discover) {
+            discoverIv.setImageResource(R.drawable.ic_discover_idle);
         }
     }
-
 
     private String mkText(String text) {
         return (text == null || text.length() == 0) ? "---" : text;
     }
 
     public void onEventMainThread(HeartBeatEvent beat) {
+        resetIfFirstTime();
+
         eventIv.setImageResource(R.drawable.ic_event);
         contentView.removeCallbacks(backToIdle);
         contentView.postDelayed(backToIdle, Config.HEARTBEAT_DELAY_MS);

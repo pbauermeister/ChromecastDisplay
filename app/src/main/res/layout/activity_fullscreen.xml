@@ -7,10 +7,14 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <!--Blank-->
+
     <android.support.v4.widget.Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
+
+    <!--Screen-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,6 +23,8 @@
         android:background="#0099cc"
         android:orientation="vertical"
         android:padding="8dp">
+
+        <!--Row 1-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -46,6 +52,8 @@
                 android:gravity="center_vertical|right" />
         </LinearLayout>
 
+        <!--Row 2-->
+
         <android.support.v4.widget.Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -64,6 +72,8 @@
             android:layout_height="0dp"
             android:layout_weight="3" />
 
+        <!--Indicators-->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -72,57 +82,84 @@
 
             <ImageView
                 android:id="@+id/audio_level"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/ic_volume_00" />
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_volume_10" />
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
 
             <ImageView
                 android:id="@+id/audio_muted"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/ic_volume_on" />
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_volume_off" />
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
 
             <ImageView
                 android:id="@+id/stand_by"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/ic_standby_unknown" />
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_standby" />
 
-            <FrameLayout
+            <android.support.v4.widget.Space
                 android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/discover"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center">
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_discover_ongoing" />
 
-                <ImageView
-                    android:id="@+id/state"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_state_unknown" />
+            <android.support.v4.widget.Space
+                android:layout_width="4dp"
+                android:layout_height="1dp" />
 
-                <ImageView
-                    android:id="@+id/nb"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_nb" />
-            </FrameLayout>
+            <ImageView
+                android:id="@+id/state"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_state" />
+
+            <android.support.v4.widget.Space
+                android:layout_width="4dp"
+                android:layout_height="1dp" />
+
+            <ImageView
+                android:id="@+id/nb"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_nb_many" />
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
 
             <ImageView
                 android:id="@+id/event"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:src="@drawable/ic_idle" />
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_event" />
         </LinearLayout>
     </LinearLayout>
+
+    <!--Blank-->
 
     <android.support.v4.widget.Space
         android:layout_width="match_parent"

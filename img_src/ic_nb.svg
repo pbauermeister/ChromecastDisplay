@@ -7,9 +7,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="148"
+   width="24"
    height="48"
-   viewBox="0 0 148 48"
+   viewBox="0 0 24 48"
    id="svg2987"
    version="1.1"
    inkscape:version="0.48.4 r9939"
@@ -42,7 +42,7 @@
      id="namedview2991"
      showgrid="false"
      inkscape:zoom="4.9166667"
-     inkscape:cx="74.338983"
+     inkscape:cx="50.847458"
      inkscape:cy="23.389831"
      inkscape:window-x="326"
      inkscape:window-y="30"
@@ -50,7 +50,7 @@
      inkscape:current-layer="svg2987" />
   <g
      id="g3849-4"
-     transform="matrix(0.57442576,-0.57442576,0.57442576,0.57442576,89.714057,46.899142)"
+     transform="matrix(0.57442576,-0.57442576,0.57442576,0.57442576,-34.645318,46.899142)"
      style="fill:#808080;fill-opacity:0.25;stroke:#000000;stroke-width:2.83484197;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none">
     <path
        style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#808080;fill-opacity:0.25;fill-rule:nonzero;stroke:none;stroke-width:3.69294071;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"

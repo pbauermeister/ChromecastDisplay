@@ -25,7 +25,6 @@ public class CommandHandler extends CommandLauncher {
                 post(StateEvent.Discover);
                 break;
             case DISCOVERED:
-                post(StateEvent.DiscoveredSome);
                 post(StateEvent.Connect);
                 break;
             case CONNECTED:
