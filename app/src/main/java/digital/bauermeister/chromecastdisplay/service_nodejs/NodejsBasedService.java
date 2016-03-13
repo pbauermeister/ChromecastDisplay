@@ -49,15 +49,18 @@ public class NodejsBasedService extends Service {
 //        toast("Rooted: " + rooted);
 
         if (!rooted) {
-            showDialogAndExit(0, R.string.error_not_rooted_message);
+            showDialog(0, R.string.error_not_rooted_message, null, true);
         } else if (!new CommandLauncher().initDebian()) {
-            showDialogAndExit(0, R.string.error_init_debian_message);
+            showDialog(0, R.string.error_init_debian_message, null, true);
         } else if (!new CommandLauncher().hasNodeJsProgram()) {
-            showDialogAndExit(0, R.string.error_no_nodejs_program_message);
-        } else if (!new CommandHandler().runNodeJsProgram()) {
-            showDialogAndExit(0, R.string.error_nodejs_program_message);
+            showDialog(0, R.string.error_no_nodejs_program_message, null, true);
         } else {
-            // All OK
+            while (true) {
+                CommandHandler cmdh = new CommandHandler();
+                if (!cmdh.runNodeJsProgram()) {
+                    showDialog(0, R.string.error_nodejs_program_message, cmdh.getError(), false);
+                }
+            }
         }
     }
 
@@ -84,21 +87,29 @@ public class NodejsBasedService extends Service {
         });
     }
 
-
-    public void showDialogAndExit(final int titleId, final int messageId) {
+    public void showDialog(final int titleId, final int messageId, final String details,
+                           final boolean exit) {
         // we are still in the service's thread
         EventBus.getDefault().post(new MainActivity.RunnableInActivity() {
             @Override
             public void run() {
                 // EventBus executes this in the UI thread
-                Util.showDialog(activity, titleId, messageId, new Util.DialogListener() {
-                    @Override
-                    public void onDismiss() {
-                        activity.finish();
-                    }
-                });
+                Util.DialogListener listener = exit ?
+                        new Util.DialogListener() {
+                            @Override
+                            public void onDismiss() {
+                                activity.finish();
+                            }
+                        }
+                        : null;
+
+                if (details == null) {
+                    Util.showDialog(activity, titleId, messageId, listener);
+                } else {
+                    String message = activity.getString(messageId) + "\n\n" + details;
+                    Util.showDialog(activity, titleId, message, listener);
+                }
             }
         });
     }
-
 }

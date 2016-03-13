@@ -47,6 +47,10 @@ public class ShellCommand {
         return execute(cmd) == 0;
     }
 
+    public String getError() {
+        return error;
+    }
+
     private boolean start(String... cmd) {
         // for debug
         cmdNr++;
@@ -144,6 +148,7 @@ public class ShellCommand {
             Log.e(TAG, toString() + " ERROR finish() readLine: " + e);
             e.printStackTrace();
         }
+        if(error.length()==0) error = null;
         Log.v(TAG, toString() + " err: " + error);
         Log.v(TAG, toString() + " ret: " + returnCode);
 
