@@ -54,7 +54,7 @@ public class NodejsBasedService extends Service {
             showDialogAndExit(0, R.string.error_init_debian_message);
         } else if (!new CommandLauncher().hasNodeJsProgram()) {
             showDialogAndExit(0, R.string.error_no_nodejs_program_message);
-        } else if (!new CommandLauncher().runNodeJsProgram()) {
+        } else if (!new CommandHandler().runNodeJsProgram()) {
             showDialogAndExit(0, R.string.error_nodejs_program_message);
         } else {
             // All OK

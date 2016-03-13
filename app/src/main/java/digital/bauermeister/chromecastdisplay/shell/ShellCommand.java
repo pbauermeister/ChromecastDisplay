@@ -83,13 +83,18 @@ public class ShellCommand {
                     if (line == null) {
                         break;
                     }
-
                 } catch (IOException e) {
                     Log.e(TAG, toString() + " ERROR executeUntil() readLine: " + e);
                     e.printStackTrace();
                     break;
                 }
-                handleLine(line);
+
+                try {
+                    handleLine(line);
+                } catch (Exception e) {
+                    Log.e(TAG, toString() + " ERROR parsing line " + line);
+                    e.printStackTrace();
+                }
             }
             return finish() == 0;
         } else {

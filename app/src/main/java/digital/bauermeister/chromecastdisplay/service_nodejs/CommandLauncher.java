@@ -29,11 +29,4 @@ public class CommandLauncher extends ShellCommand {
                 "debian.sh -c /root/ChromecastDisplay/debian-phone-nodejs/chromecast-display.js"
         );
     }
-
-    protected void handleLine(String line) {
-        super.handleLine(line);
-        EventData event = EventParser.parseLine(line);
-        Log.d(TAG, "XXXXX " + event);
-    }
-
 }
