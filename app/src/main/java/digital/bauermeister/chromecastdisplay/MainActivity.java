@@ -2,7 +2,6 @@ package digital.bauermeister.chromecastdisplay;
 
 import android.app.Activity;
 import android.content.Context;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -41,8 +40,13 @@ public class MainActivity extends AppCompatActivity {
     private boolean first = true;
     private PowerManager.WakeLock wakeLock;
 
+    // Media players
     private MediaPlayer heartbeatMp = null;
     private MediaPlayer noiseMp = null;
+    private MediaPlayer discoverMp = null;
+    private MediaPlayer connectingMp = null;
+    private MediaPlayer connectedMp = null;
+    private MediaPlayer notConnectedMp = null;
 
 
     @Override
@@ -87,12 +91,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initAudio() {
-        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-
-        // Request permanent audio focus
-        am.requestAudioFocus(null, AudioManager.STREAM_SYSTEM, AudioManager.AUDIOFOCUS_GAIN);
-
+        heartbeatMp = MediaPlayer.create(this, R.raw.radio_beep);
         noiseMp = MediaPlayer.create(this, R.raw.snd23503__percy_duke__radio_static);
+        discoverMp = MediaPlayer.create(this, R.raw.snd70299__kizilsungur__sonar);
+        connectingMp = MediaPlayer.create(this, R.raw.connecting);
+        connectedMp = MediaPlayer.create(this, R.raw.snd42796__digifishmusic__sonar_ping);
+        notConnectedMp = MediaPlayer.create(this, R.raw.disconnected);
+
         noiseMp.setLooping(true);
         noiseMp.setVolume(0.05f, 0.05f);
         noiseMp.start();
@@ -200,15 +205,14 @@ public class MainActivity extends AppCompatActivity {
     private void stopNoiseMp() {
         if (noiseMp.isPlaying()) {
             noiseMp.stop();
-            noiseMp.reset();
         }
     }
-    private void playEventSound(int sndId) {
-        if (heartbeatMp != null && heartbeatMp.isPlaying()) {
+
+    private void playEventSound(MediaPlayer mp) {
+        if (heartbeatMp.isPlaying()) {
             heartbeatMp.stop();
-            heartbeatMp.reset();
         }
-        MediaPlayer.create(this, sndId).start();
+        mp.start();
     }
 
     public void onEventMainThread(StateEvent event) {
@@ -220,20 +224,20 @@ public class MainActivity extends AppCompatActivity {
         switch (event) {
             case Discover:
                 discoverIv.setImageResource(R.drawable.ic_discover_ongoing);
-                playEventSound(R.raw.snd70299__kizilsungur__sonar);
+                playEventSound(discoverMp);
                 break;
             case Connect:
                 stateIv.setImageResource(R.drawable.ic_state_connect);
-                playEventSound(R.raw.connecting);
+                playEventSound(connectingMp);
                 break;
             case Connected:
                 stateIv.setImageResource(R.drawable.ic_state_connected);
                 stopNoiseMp();
-                playEventSound(R.raw.snd42796__digifishmusic__sonar_ping);
+                playEventSound(connectedMp);
                 break;
             case NotConnected:
                 stateIv.setImageResource(R.drawable.ic_state_connected_not);
-                playEventSound(R.raw.disconnected);
+                playEventSound(notConnectedMp);
                 break;
         }
 
@@ -253,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
         contentView.removeCallbacks(backToIdle);
         contentView.postDelayed(backToIdle, Config.HEARTBEAT_DELAY_MS);
 
-        if (heartbeatMp == null || !heartbeatMp.isPlaying()) {
+        if (!heartbeatMp.isPlaying()) {
             heartbeatMp = MediaPlayer.create(this, R.raw.radio_beep);
             heartbeatMp.start();
         }
