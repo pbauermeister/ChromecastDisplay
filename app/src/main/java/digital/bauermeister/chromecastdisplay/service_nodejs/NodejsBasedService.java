@@ -14,9 +14,6 @@ import digital.bauermeister.chromecastdisplay.shell.ShellCommand;
 public class NodejsBasedService extends Service {
     private static final String TAG = "TheService";
 
-    public class StartEvent {
-    }
-
     @Override
     public IBinder onBind(Intent intent) {
         // No binding provided
@@ -47,34 +44,42 @@ public class NodejsBasedService extends Service {
     public void onEventBackgroundThread(StartEvent event) {
         boolean rooted = ShellCommand.isRooted();
 //        toast("Rooted: " + rooted);
+        CommandLauncher cmd;
 
         if (!rooted) {
             showDialog(0, R.string.error_not_rooted_message, null, true);
-        } else if (!new CommandLauncher().initDebian()) {
-            showDialog(0, R.string.error_init_debian_message, null, true);
-        } else if (!new CommandLauncher().hasNodeJsProgram()) {
-            showDialog(0, R.string.error_no_nodejs_program_message, null, true);
-        } else {
-            while (true) {
-                CommandHandler cmdh = new CommandHandler();
-                if (!cmdh.runNodeJsProgram()) {
-                    showDialog(0, R.string.error_nodejs_program_message, cmdh.getError(), false);
-                }
+            return;
+        }
+
+        cmd = new CommandLauncher();
+        if (!cmd.initDebian()) {
+            showDialog(0, R.string.error_init_debian_message, cmd, true);
+            return;
+        }
+
+        cmd = new CommandLauncher();
+        if (!cmd.hasNodeJsProgram()) {
+            showDialog(0, R.string.error_no_nodejs_program_message, cmd, true);
+            return;
+        }
+
+        while (true) {
+            cmd = new CommandHandler();
+            if (!cmd.runNodeJsProgram()) {
+                showDialog(0, R.string.error_nodejs_program_message, cmd, false);
             }
         }
-    }
 
-    /*
-     * The EventBus allows us to execute code in the UI (aka Main) thread
-     */
-
-    private interface RunnableInUiThread extends Runnable {
     }
 
     public void onEventMainThread(RunnableInUiThread runnable) {
         // we are in the UI thread
         runnable.run();
     }
+
+    /*
+     * The EventBus allows us to execute code in the UI (aka Main) thread
+     */
 
     private void toast(final String text) {
         // we are still in the service's thread
@@ -87,8 +92,8 @@ public class NodejsBasedService extends Service {
         });
     }
 
-    public void showDialog(final int titleId, final int messageId, final String details,
-                           final boolean exit) {
+    public void showDialog(final int titleId, final int messageId,
+                           final CommandLauncher cmd, final boolean exit) {
         // we are still in the service's thread
         EventBus.getDefault().post(new MainActivity.RunnableInActivity() {
             @Override
@@ -103,13 +108,21 @@ public class NodejsBasedService extends Service {
                         }
                         : null;
 
-                if (details == null) {
+                if (cmd == null) {
                     Util.showDialog(activity, titleId, messageId, listener);
                 } else {
-                    String message = activity.getString(messageId) + "\n\n" + details;
+                    String message = activity.getString(messageId);
+                    if (cmd.getError() != null) message += "\n\nError: " + cmd.getError();
+                    message += "\n\nReturned: " + cmd.getReturnCode();
                     Util.showDialog(activity, titleId, message, listener);
                 }
             }
         });
+    }
+
+    private interface RunnableInUiThread extends Runnable {
+    }
+
+    public class StartEvent {
     }
 }

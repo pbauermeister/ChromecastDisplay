@@ -51,6 +51,10 @@ public class ShellCommand {
         return error;
     }
 
+    public int getReturnCode() {
+        return returnCode==null?0 : returnCode;
+    }
+
     private boolean start(String... cmd) {
         // for debug
         cmdNr++;
