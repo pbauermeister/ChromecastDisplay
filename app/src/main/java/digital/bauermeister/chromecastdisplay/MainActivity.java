@@ -141,6 +141,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        // standby
+        standByIv.setImageResource(R.drawable.ic_play);
+
         // mute
         if (audioMuted == null || !audioMuted.equals(info.audioMuted)) {
             audioMuted = info.audioMuted;
@@ -158,10 +161,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void resetIfFirstTime() {
         if (!first) return;
-        first = true;
+        first = false;
         audioLevelIv.setImageResource(R.drawable.ic_volume_00);
         audioMutedIv.setImageResource(R.drawable.ic_volume_on);
-        standByIv.setImageResource(R.drawable.ic_play);
+        standByIv.setImageResource(R.drawable.ic_play_pause);
         discoverIv.setImageResource(R.drawable.ic_discover_idle);
         stateIv.setImageResource(R.drawable.ic_state_unknown);
         nbIv.setImageResource(R.drawable.ic_nb);
