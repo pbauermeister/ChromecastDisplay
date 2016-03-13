@@ -1,7 +1,10 @@
 package digital.bauermeister.chromecastdisplay;
 
 import android.app.Activity;
+import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -30,11 +33,14 @@ public class MainActivity extends AppCompatActivity {
     private ImageView eventIv;
     private ImageView nbIv;
 
-    float audioLevel = -1f;
-    Boolean audioMuted = null;
-    Boolean standBy = null;
-    StateEvent state = null;
-    boolean first = true;
+    private float audioLevel = -1f;
+    private Boolean audioMuted = null;
+    private Boolean standBy = null;
+    private StateEvent state = null;
+    private boolean first = true;
+    private PowerManager.WakeLock wakeLock;
+
+    private MediaPlayer mpHeartbeat = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +74,12 @@ public class MainActivity extends AppCompatActivity {
         stateIv = (ImageView) findViewById(R.id.state);
         eventIv = (ImageView) findViewById(R.id.event);
         nbIv = (ImageView) findViewById(R.id.nb);
+
+        // backlight
+        final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        this.wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "My Tag");
+        this.wakeLock.acquire();
+
     }
 
 
@@ -85,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        this.wakeLock.release();
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
@@ -170,6 +183,14 @@ public class MainActivity extends AppCompatActivity {
         nbIv.setImageResource(R.drawable.ic_nb);
     }
 
+    private void playEventSound(int sndId) {
+        if (mpHeartbeat != null && mpHeartbeat.isPlaying()) {
+            mpHeartbeat.stop();
+            mpHeartbeat.reset();
+        }
+        MediaPlayer.create(this, sndId).start();
+    }
+
     public void onEventMainThread(StateEvent event) {
         resetIfFirstTime();
 
@@ -179,15 +200,20 @@ public class MainActivity extends AppCompatActivity {
         switch (event) {
             case Discover:
                 discoverIv.setImageResource(R.drawable.ic_discover_ongoing);
+//                playSound(this, R.raw.sonarping);
+                playEventSound(R.raw.snd70299__kizilsungur__sonar);
                 break;
             case Connect:
                 stateIv.setImageResource(R.drawable.ic_state_connect);
+                playEventSound(R.raw.connecting);
                 break;
             case Connected:
                 stateIv.setImageResource(R.drawable.ic_state_connected);
+                playEventSound(R.raw.snd42796__digifishmusic__sonar_ping);
                 break;
             case NotConnected:
                 stateIv.setImageResource(R.drawable.ic_state_connected_not);
+                playEventSound(R.raw.disconnected);
                 break;
         }
 
@@ -206,6 +232,11 @@ public class MainActivity extends AppCompatActivity {
         eventIv.setImageResource(R.drawable.ic_event);
         contentView.removeCallbacks(backToIdle);
         contentView.postDelayed(backToIdle, Config.HEARTBEAT_DELAY_MS);
+
+        if (mpHeartbeat == null || !mpHeartbeat.isPlaying()) {
+            mpHeartbeat = MediaPlayer.create(this, R.raw.radio_beep);
+            mpHeartbeat.start();
+        }
     }
 
     private Runnable backToIdle = new Runnable() {
