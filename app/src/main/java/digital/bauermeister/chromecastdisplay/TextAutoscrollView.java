@@ -4,10 +4,9 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -72,6 +71,7 @@ public class TextAutoscrollView extends TextView {
         if (this.text.equals(text)) return;
         this.text = text;
         setText(text);
+        setTextColor(0xff << 24);
 
         // scrolling
         removeCallbacks(scroller);
@@ -114,7 +114,16 @@ public class TextAutoscrollView extends TextView {
             if (scrollXPosition < -textWidth) {
                 scrollXPosition = 0;
                 scrollYPosition = -getHeight();
+                setTextColor(0xff << 24);
             }
+
+            float remWidth = scrollXPosition + textWidth;
+            if (remWidth < getWidth()) {
+                float fade = remWidth / getWidth();
+                int alpha = (int) (fade * 0xff + 0.5f);
+                setTextColor(alpha << 24);
+            }
+
             delay = Config.SCROLL_X_DELAY_MS;
         }
         setPadding((int) scrollXPosition, (int) -scrollYPosition, getPaddingRight(), getPaddingBottom());
