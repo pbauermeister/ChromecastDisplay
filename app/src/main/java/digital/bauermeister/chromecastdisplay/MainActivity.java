@@ -99,7 +99,8 @@ public class MainActivity extends AppCompatActivity {
         notConnectedMp = MediaPlayer.create(this, R.raw.disconnected);
 
         // tweaks
-        discoverMp.setVolume(0.1f, 0.1f);
+        discoverMp.setVolume(0.03f, 0.03f);
+        connectedMp.setVolume(0.4f, 0.4f);
 
         // bg initial noise
         noiseMp.setLooping(true);
