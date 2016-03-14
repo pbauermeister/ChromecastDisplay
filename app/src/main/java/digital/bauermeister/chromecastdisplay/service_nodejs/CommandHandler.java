@@ -1,7 +1,5 @@
 package digital.bauermeister.chromecastdisplay.service_nodejs;
 
-import android.util.Log;
-
 import de.greenrobot.event.EventBus;
 import digital.bauermeister.chromecastdisplay.ChromecastInfo;
 import digital.bauermeister.chromecastdisplay.bus_event.from_worker.ChromecastInfoEvent;
@@ -16,9 +14,9 @@ public class CommandHandler extends CommandLauncher {
 
     protected void handleLine(String line) {
         super.handleLine(line);
-        EventData event = EventParser.parseLine(line);
-
         post(HeartBeatEvent.Beat);
+        EventData event = EventParser.parseLine(line);
+        if (event == null) return;
 
         switch (event.type) {
             case DISCOVERING:

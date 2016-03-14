@@ -1,6 +1,9 @@
 package digital.bauermeister.chromecastdisplay.service_nodejs;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import digital.bauermeister.chromecastdisplay.service_nodejs.event_models.EventMessage;
 
@@ -8,8 +11,16 @@ import digital.bauermeister.chromecastdisplay.service_nodejs.event_models.EventM
  * Created by pascal on 3/11/16.
  */
 public class EventParser {
+    private static final String TAG = "EventParser";
+
     public static EventData parseLine(String line) {
-        EventMessage message = new Gson().fromJson(line, EventMessage.class);
+        EventMessage message = null;
+        try {
+            message = new Gson().fromJson(line, EventMessage.class);
+        } catch (JsonSyntaxException e) {
+            Log.e(TAG, "ERROR parsing JSON: " + e);
+            return null;
+        }
 
         switch (message.event) {
             case DISCOVERING:

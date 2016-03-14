@@ -76,7 +76,6 @@ public class ShellCommand {
 
         } catch (IOException e) {
             Log.e(TAG, toString() + " ERROR execute(): " + e);
-            e.printStackTrace();
             return false;
         }
         return true;
@@ -92,15 +91,15 @@ public class ShellCommand {
                         break;
                     }
                 } catch (IOException e) {
-                    Log.e(TAG, toString() + " ERROR executeUntil() readLine: " + e);
-                    e.printStackTrace();
+                    Log.e(TAG, toString() + " ERROR in executeAndHandleLines readLine: " + e);
                     break;
                 }
 
                 try {
                     handleLine(line);
                 } catch (Exception e) {
-                    Log.e(TAG, toString() + " ERROR parsing line " + line);
+                    Log.e(TAG, toString() + " ERROR in executeAndHandleLines handleLine ["
+                            + line + "]: " + e);
                     e.printStackTrace();
                 }
             }
@@ -115,7 +114,6 @@ public class ShellCommand {
             process.destroy();
         } catch (Exception e) {
             Log.e(TAG, toString() + " ERROR destroy(): " + e);
-            e.printStackTrace();
         }
     }
 
@@ -127,7 +125,6 @@ public class ShellCommand {
             process.waitFor();
         } catch (InterruptedException e) {
             Log.e(TAG, toString() + " ERROR finish() waitFor: " + e);
-            e.printStackTrace();
             return -101;
         }
 
@@ -150,7 +147,6 @@ public class ShellCommand {
             }
         } catch (IOException e) {
             Log.e(TAG, toString() + " ERROR finish() readLine: " + e);
-            e.printStackTrace();
         }
         if(error.length()==0) error = null;
         Log.v(TAG, toString() + " err: " + error);

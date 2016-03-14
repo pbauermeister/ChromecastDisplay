@@ -19,13 +19,6 @@ public class Util {
 
     private static ArrayList<Toast> toasts = new ArrayList<Toast>();
 
-//    public static void delay(int ms) {
-//        try {
-//            Thread.sleep(1000 * 10);
-//        } catch (InterruptedException e) {
-//        }
-//    }
-
     public static void toast(Context context, String text) {
         int duration = Toast.LENGTH_LONG;
         Toast toast = Toast.makeText(context, text, duration);
