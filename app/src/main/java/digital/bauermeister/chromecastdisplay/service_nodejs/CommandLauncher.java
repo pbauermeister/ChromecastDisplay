@@ -14,6 +14,7 @@ public class CommandLauncher extends ShellCommand {
     private static final String TAG = "CommandLauncher";
 
     public boolean initDebian() {
+        executeOk("su", "-c", "debian.sh unmount");
         return executeOk("su", "-c", "debian.sh mount");
     }
 
