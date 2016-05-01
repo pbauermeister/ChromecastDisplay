@@ -67,7 +67,7 @@ public class TextAutoscrollView extends TextView {
     }
 
     public void setText2(String text) {
-        if (this.text.equals(text)) return;
+        if (this.text != null && this.text.equals(text)) return;
         this.text = text;
         setText(text);
         setTextColor(0xff << 24);
@@ -113,6 +113,7 @@ public class TextAutoscrollView extends TextView {
     private void scroll() {
         int delay;
         if (scrollYPosition < 0f) {
+            // vert scrolling up
             scrollYPosition += scrollStep;
             delay = scrollYPosition < 0 ? Config.SCROLL_Y_DELAY_MS : Config.SCROLL_TWEEN_PAUSE;
 
@@ -123,9 +124,10 @@ public class TextAutoscrollView extends TextView {
                 return;
             }
         } else {
-            // horiz scrolling
+            // horiz scrolling to left
             scrollXPosition -= scrollStep;
             if (scrollXPosition < -textWidth) {
+                // restart
                 scrollXPosition = 0;
                 scrollYPosition = -getHeight();
                 setTextColor(0xff << 24);
@@ -143,6 +145,12 @@ public class TextAutoscrollView extends TextView {
         }
         setPadding((int) scrollXPosition, (int) -scrollYPosition, getPaddingRight(), getPaddingBottom());
         if (scrollStep != 0) postDelayed(scroller, delay);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        sizeTextView();
     }
 }
 
