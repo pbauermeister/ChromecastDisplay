@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Please run this script on your development PC, with the SD cards of
+# the phone inserted and mounted as /media/sdcard/.
+#
+# The follow instructions on terminal.
+
 set -e
 
 script=debian.sh
