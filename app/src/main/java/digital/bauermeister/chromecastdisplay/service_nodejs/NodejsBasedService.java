@@ -14,6 +14,9 @@ import digital.bauermeister.chromecastdisplay.shell.ShellCommand;
 public class NodejsBasedService extends Service {
     private static final String TAG = "TheService";
 
+    final static int INIT_RETRY_DELAY = 3;
+    final static int INIT_RETRY_MAX_TIME = 60;
+
     @Override
     public IBinder onBind(Intent intent) {
         // No binding provided
@@ -42,34 +45,50 @@ public class NodejsBasedService extends Service {
     }
 
     public void onEventBackgroundThread(StartEvent event) {
-        boolean rooted = ShellCommand.isRooted();
-//        toast("Rooted: " + rooted);
         CommandLauncher cmd;
 
+        // check for rooted
+        boolean rooted = ShellCommand.isRooted();
+        //toast("Rooted: " + rooted);111
         if (!rooted) {
             showDialog(0, R.string.error_not_rooted_message, null, true);
             return;
         }
 
+        // try init Debian for a couple of attempts, may be necessary at boot time
         cmd = new CommandLauncher();
-        if (!cmd.initDebian()) {
-            showDialog(0, R.string.error_init_debian_message, cmd, true);
-            return;
+        int t = 0;
+        while (!cmd.initDebian()) {
+            sleep(INIT_RETRY_DELAY);
+            t += INIT_RETRY_DELAY;
+            if (t >= INIT_RETRY_MAX_TIME) {
+                showDialog(0, R.string.error_init_debian_message, cmd, true);
+                return;
+            }
         }
+        Log.d(TAG, "********** initDebian: ok in " + t);
 
+        // check for nodejs script
         cmd = new CommandLauncher();
-        if (!cmd.hasNodeJsProgram()) {
-            showDialog(0, R.string.error_no_nodejs_program_message, cmd, true);
-            return;
+        t = 0;
+        while (!cmd.hasNodeJsProgram()) {
+            sleep(INIT_RETRY_DELAY);
+            t += INIT_RETRY_DELAY;
+            if (t >= INIT_RETRY_MAX_TIME) {
+                showDialog(0, R.string.error_no_nodejs_program_message, cmd, true);
+                return;
+            }
+            cmd.initDebian();
         }
+        Log.d(TAG, "********** hasNodeJsProgram: ok in " + t);
 
+        // run nodejs script
         while (true) {
             cmd = new CommandHandler();
             if (!cmd.runNodeJsProgram()) {
                 showDialog(0, R.string.error_nodejs_program_message, cmd, false);
             }
         }
-
     }
 
     public void onEventMainThread(RunnableInUiThread runnable) {
@@ -83,6 +102,7 @@ public class NodejsBasedService extends Service {
 
     private void toast(final String text) {
         // we are still in the service's thread
+        Log.d(TAG, "Toasting: " + text);
         EventBus.getDefault().post(new RunnableInUiThread() {
             @Override
             public void run() {
@@ -95,6 +115,7 @@ public class NodejsBasedService extends Service {
     public void showDialog(final int titleId, final int messageId,
                            final CommandLauncher cmd, final boolean exit) {
         // we are still in the service's thread
+        Log.d(TAG, "Dialog: " + getString(messageId));
         EventBus.getDefault().post(new MainActivity.RunnableInActivity() {
             @Override
             public void run() {
@@ -120,9 +141,28 @@ public class NodejsBasedService extends Service {
         });
     }
 
+    public void showDialog(final int titleId, final String message) {
+        // we are still in the service's thread
+        Log.d(TAG, "Dialog: " + message);
+        EventBus.getDefault().post(new MainActivity.RunnableInActivity() {
+            @Override
+            public void run() {
+                // EventBus executes this in the UI thread
+                Util.showDialog(activity, titleId, message, null);
+            }
+        });
+    }
+
     private interface RunnableInUiThread extends Runnable {
     }
 
     public class StartEvent {
+    }
+
+    private void sleep(int seconds) {
+        try {
+            Thread.sleep(1000 * seconds);
+        } catch (InterruptedException e) {
+        }
     }
 }
