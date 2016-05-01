@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d(TAG, "********** MainActivity onCreate");
 
         setContentView(R.layout.activity_fullscreen);
         contentView = findViewById(R.id.fullscreen_content);
@@ -107,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         noiseMp.setVolume(0.05f, 0.05f);
         noiseMp.start();
     }
+
     @Override
     protected void onResume() {
         super.onResume();
