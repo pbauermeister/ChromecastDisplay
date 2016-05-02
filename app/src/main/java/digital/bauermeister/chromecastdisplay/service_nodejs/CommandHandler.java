@@ -2,6 +2,7 @@ package digital.bauermeister.chromecastdisplay.service_nodejs;
 
 import de.greenrobot.event.EventBus;
 import digital.bauermeister.chromecastdisplay.ChromecastInfo;
+import digital.bauermeister.chromecastdisplay.DeviceManager;
 import digital.bauermeister.chromecastdisplay.bus_event.from_worker.ChromecastInfoEvent;
 import digital.bauermeister.chromecastdisplay.bus_event.from_worker.HeartBeatEvent;
 import digital.bauermeister.chromecastdisplay.bus_event.from_worker.StateEvent;
@@ -35,6 +36,8 @@ public class CommandHandler extends CommandLauncher {
                 String statusText = "---";
                 try {
                     appName = data.message.receiver_status.status.applications[0].displayName;
+                    String udn = data.message.device.info.UDN;
+                    DeviceManager.INSTANCE.add(udn, data.message.device.name);
                 } catch (Exception e) {
                 }
                 try {

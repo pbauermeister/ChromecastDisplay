@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.util.Map;
+
 import de.greenrobot.event.EventBus;
 import digital.bauermeister.chromecastdisplay.bus_event.from_worker.ChromecastInfoEvent;
 import digital.bauermeister.chromecastdisplay.bus_event.from_worker.HeartBeatEvent;
@@ -197,6 +199,12 @@ public class MainActivity extends AppCompatActivity {
             standBy = info.standBy;
             standByIv.setImageResource(standBy ?
                     R.drawable.ic_pause : R.drawable.ic_play);
+        }
+
+        // devices
+        Map<String, String> devices = DeviceManager.INSTANCE.get();
+        for (Map.Entry<String, String> each : devices.entrySet()) {
+            Log.d(TAG, each.getKey() + " --> " + each.getValue());
         }
     }
 
