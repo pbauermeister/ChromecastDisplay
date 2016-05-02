@@ -203,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
         // devices
         Map<String, String> devices = DeviceManager.INSTANCE.get();
+        nbIv.setImageResource(devices.size()>1 ? R.drawable.ic_nb_many : R.drawable.ic_nb);
         for (Map.Entry<String, String> each : devices.entrySet()) {
             Log.d(TAG, each.getKey() + " --> " + each.getValue());
         }
