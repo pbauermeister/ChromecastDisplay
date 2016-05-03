@@ -15,6 +15,7 @@ public class TheApplication extends Application {
 
         Log.d(TAG, "*** APP onCreate ***");
 
+        PreferencesManager.INSTANCE.init(this);
         startService(new Intent(this, NodejsBasedService.class));
 
         Log.d(TAG, "*** APP onCreate done");

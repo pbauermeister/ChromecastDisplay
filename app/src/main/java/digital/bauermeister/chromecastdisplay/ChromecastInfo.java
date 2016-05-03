@@ -7,6 +7,7 @@ import android.util.Log;
  */
 public class ChromecastInfo implements Comparable<ChromecastInfo> {
     public final String chromecastName;
+    public final String udn;
     public final String appName;
     public final String statusText;
     public final Float audioLevel;
@@ -16,6 +17,7 @@ public class ChromecastInfo implements Comparable<ChromecastInfo> {
 
     public ChromecastInfo(
             String chromecastName,
+            String udn,
             String appName,
             String statusText,
             float audioLevel,
@@ -26,6 +28,7 @@ public class ChromecastInfo implements Comparable<ChromecastInfo> {
         }
 
         this.chromecastName = chromecastName;
+        this.udn = udn;
         this.appName = appName;
         this.statusText = statusText.trim();
         this.audioLevel = audioLevel;

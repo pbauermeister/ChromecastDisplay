@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.greenrobot.event.EventBus;
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private MediaPlayer connectedMp = null;
     private MediaPlayer notConnectedMp = null;
 
+    private String xcurrentUdn = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +96,14 @@ public class MainActivity extends AppCompatActivity {
         this.wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "My Tag");
         this.wakeLock.acquire();
 
+        // long press
+        contentView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                handleLongClick();
+                return true;
+            }
+        });
     }
 
     private void initAudio() {
@@ -132,16 +143,52 @@ public class MainActivity extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
     }
 
-    public void onEventMainThread(ChromecastInfoEvent event) {
-        resetIfFirstTime();
-        updateDisplay(event.chromecastInfo);
+    private boolean isSelectedDevice(ChromecastInfo info) {
+        String thisUdn = info.udn;
+        if (thisUdn == null) {
+            return false;
+        }
+
+        // none selected -> compare to the first one of all seen devices
+        String chosenUdn = PreferencesManager.INSTANCE.getChosenDeviceUdn();
+        if (chosenUdn == null) {
+            PreferencesManager.INSTANCE.putChosenDevice(info);
+            chosenUdn = PreferencesManager.INSTANCE.getChosenDeviceUdn();
+        }
+
+        // is it the one selected?
+        return thisUdn.equals(chosenUdn);
     }
 
-    public void updateDisplay(ChromecastInfo info) {
+    public void onEventMainThread(ChromecastInfoEvent event) {
+        resetIfFirstTime();
+
+        ChromecastInfo selected = PreferencesManager.INSTANCE.getChosenDevice();
+
+        Log.d(TAG, "??? is="+isSelectedDevice(event.chromecastInfo) + " sel="+ selected + " has="+DeviceManager.INSTANCE.has(event.chromecastInfo));
+
+        if (!isSelectedDevice(event.chromecastInfo) && selected != null
+                && !DeviceManager.INSTANCE.has(event.chromecastInfo))
+            updateDisplay(selected, false); // display wanted but unseen device
+        else
+            updateDisplay(event.chromecastInfo, DeviceManager.INSTANCE.has(event.chromecastInfo));
+    }
+
+    public void updateDisplay(ChromecastInfo info, boolean sure) {
+        // devices
+        Map<String, ChromecastInfo> devices = DeviceManager.INSTANCE.get();
+        nbIv.setImageResource(devices.size() > 1 ? R.drawable.ic_nb_many : R.drawable.ic_nb);
+        for (Map.Entry<String, ChromecastInfo> each : devices.entrySet()) {
+            Log.d(TAG, each.getKey() + " --> " + each.getValue().chromecastName);
+        }
+
+        if (!isSelectedDevice(info))
+            return;
+
         // texts
         chromecastNameTv.setText2(info.chromecastName); //+ " - The quick brown fox jumps over the lazy dog");
-        appNameNameTv.setText2(info.appName);
-        statusTextTv.setText2(mkText(info.statusText));
+        appNameNameTv.setText2(!sure ? "???" : info.appName);
+        statusTextTv.setText2(!sure ? "???" : mkText(info.statusText));
 
         // volume
         if (info.audioLevel != audioLevel) {
@@ -199,13 +246,6 @@ public class MainActivity extends AppCompatActivity {
             standBy = info.standBy;
             standByIv.setImageResource(standBy ?
                     R.drawable.ic_pause : R.drawable.ic_play);
-        }
-
-        // devices
-        Map<String, String> devices = DeviceManager.INSTANCE.get();
-        nbIv.setImageResource(devices.size()>1 ? R.drawable.ic_nb_many : R.drawable.ic_nb);
-        for (Map.Entry<String, String> each : devices.entrySet()) {
-            Log.d(TAG, each.getKey() + " --> " + each.getValue());
         }
     }
 
@@ -301,5 +341,27 @@ public class MainActivity extends AppCompatActivity {
         // we are in the UI thread
         runnable.activity = MainActivity.this;
         runnable.run();
+    }
+
+    private void handleLongClick() {
+        Log.d(TAG, "handleLongClick");
+        HashMap<String, ChromecastInfo> devices = DeviceManager.INSTANCE.get();
+        List<String> udns = DeviceManager.getUdns(devices);
+
+        String udn = PreferencesManager.INSTANCE.getChosenDeviceUdn();
+        if (udn == null && udns.size() > 0) {
+            udn = udns.get(0);
+        }
+
+        if (udn != null && udns.contains(udn)) {
+            int index = udns.indexOf(udn);
+            index = (index + 1) % udns.size();
+            Log.d(TAG, "  OLD: " + udn);
+            udn = udns.get(index);
+            ChromecastInfo info = devices.get(udn);
+            PreferencesManager.INSTANCE.putChosenDevice(info);
+            updateDisplay(info, false);
+            Log.d(TAG, "  NEW: " + udn + " " + info.chromecastName);
+        }
     }
 }

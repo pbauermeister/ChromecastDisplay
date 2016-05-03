@@ -36,8 +36,6 @@ public class CommandHandler extends CommandLauncher {
                 String statusText = "---";
                 try {
                     appName = data.message.receiver_status.status.applications[0].displayName;
-                    String udn = data.message.device.info.UDN;
-                    DeviceManager.INSTANCE.add(udn, data.message.device.name);
                 } catch (Exception e) {
                 }
                 try {
@@ -46,12 +44,16 @@ public class CommandHandler extends CommandLauncher {
                 }
                 ChromecastInfo info = new ChromecastInfo(
                         data.message.device.name,
+                        data.message.device.info.UDN,
                         appName,
                         statusText,
                         data.message.receiver_status.status.volume.level,
                         data.message.receiver_status.status.volume.muted,
-                        false
-                );
+                        false);
+
+                String udn = data.message.device.info.UDN;
+                DeviceManager.INSTANCE.add(udn, info);
+
                 post(new ChromecastInfoEvent(info));
                 break;
 
