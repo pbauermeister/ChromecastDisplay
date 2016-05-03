@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "??? is="+isSelectedDevice(event.chromecastInfo) + " sel="+ selected + " has="+DeviceManager.INSTANCE.has(event.chromecastInfo));
 
         if (!isSelectedDevice(event.chromecastInfo) && selected != null
-                && !DeviceManager.INSTANCE.has(event.chromecastInfo))
+                && !DeviceManager.INSTANCE.has(selected))
             updateDisplay(selected, false); // display wanted but unseen device
         else
             updateDisplay(event.chromecastInfo, DeviceManager.INSTANCE.has(event.chromecastInfo));
