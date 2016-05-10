@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Intent;
 import android.util.Log;
 
+import digital.bauermeister.chromecastdisplay.crash.UncaughtExceptionHandler;
 import digital.bauermeister.chromecastdisplay.service_nodejs.NodejsBasedService;
 
 public class TheApplication extends Application {
@@ -15,6 +16,7 @@ public class TheApplication extends Application {
 
         Log.d(TAG, "*** APP onCreate ***");
 
+        UncaughtExceptionHandler.INSTANCE.init(this);
         PreferencesManager.INSTANCE.init(this);
         startService(new Intent(this, NodejsBasedService.class));
 

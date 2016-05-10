@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     private View contentView;
+    private View decorView;
     private TextAutoscrollView chromecastNameTv;
     private TextAutoscrollView appNameNameTv;
     private TextAutoscrollView statusTextTv;
@@ -71,12 +72,8 @@ public class MainActivity extends AppCompatActivity {
             actionBar.hide();
         }
 
-        contentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        decorView = getWindow().getDecorView();
+        setImmersive();
 
         EventBus.getDefault().register(this);
 
@@ -100,10 +97,35 @@ public class MainActivity extends AppCompatActivity {
         contentView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                handleLongClick();
+                cycleChosenDevice();
+                setImmersive();
                 return true;
             }
         });
+        contentView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setImmersive();
+            }
+        });
+    }
+
+    private void setImmersive() {
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        Log.d(TAG, "onWindowFocusChanged: " + hasFocus);
+        if (hasFocus) {
+            setImmersive();
+        }
     }
 
     private void initAudio() {
@@ -162,10 +184,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onEventMainThread(ChromecastInfoEvent event) {
         resetIfFirstTime();
-
         ChromecastInfo selected = PreferencesManager.INSTANCE.getChosenDevice();
 
-        Log.d(TAG, "??? is="+isSelectedDevice(event.chromecastInfo) + " sel="+ selected + " has="+DeviceManager.INSTANCE.has(event.chromecastInfo));
+        Log.d(TAG, "??? is=" + isSelectedDevice(event.chromecastInfo) + " sel=" + selected + " has=" + DeviceManager.INSTANCE.has(event.chromecastInfo));
 
         if (!isSelectedDevice(event.chromecastInfo) && selected != null
                 && !DeviceManager.INSTANCE.has(selected))
@@ -343,21 +364,30 @@ public class MainActivity extends AppCompatActivity {
         runnable.run();
     }
 
-    private void handleLongClick() {
-        Log.d(TAG, "handleLongClick");
+    private void cycleChosenDevice() {
+        Log.d(TAG, "*cycleChosenDevice*");
         HashMap<String, ChromecastInfo> devices = DeviceManager.INSTANCE.get();
         List<String> udns = DeviceManager.getUdns(devices);
 
+        if (udns.size() == 0) return;
+
         String udn = PreferencesManager.INSTANCE.getChosenDeviceUdn();
-        if (udn == null && udns.size() > 0) {
+
+        // no chosen device, or chosen device not present => take first present
+        if (udn == null || !udns.contains(udn)) {
             udn = udns.get(0);
         }
 
-        if (udn != null && udns.contains(udn)) {
+        // take next present device
+        else if (udn != null && udns.contains(udn)) {
             int index = udns.indexOf(udn);
             index = (index + 1) % udns.size();
             Log.d(TAG, "  OLD: " + udn);
             udn = udns.get(index);
+        }
+
+        // choose and display
+        if (udn != null && udns.contains(udn)) {
             ChromecastInfo info = devices.get(udn);
             PreferencesManager.INSTANCE.putChosenDevice(info);
             updateDisplay(info, false);

@@ -26,6 +26,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".crash.CrashActivity" />
+
         <service
             android:name=".service_nodejs.NodejsBasedService"
             android:exported="false" />

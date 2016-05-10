@@ -2,13 +2,16 @@ package digital.bauermeister.chromecastdisplay.service_nodejs;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
 import de.greenrobot.event.EventBus;
+import de.greenrobot.event.SubscriberExceptionEvent;
 import digital.bauermeister.chromecastdisplay.MainActivity;
 import digital.bauermeister.chromecastdisplay.R;
 import digital.bauermeister.chromecastdisplay.Util;
+import digital.bauermeister.chromecastdisplay.crash.UncaughtExceptionHandler;
 import digital.bauermeister.chromecastdisplay.shell.ShellCommand;
 
 public class NodejsBasedService extends Service {
@@ -164,5 +167,19 @@ public class NodejsBasedService extends Service {
             Thread.sleep(1000 * seconds);
         } catch (InterruptedException e) {
         }
+    }
+
+    public void onEvent(final SubscriberExceptionEvent event) {
+        // EventBus catches exceptions. We wanht to handle them so that we can fix them.
+        // See https://github.com/greenrobot/EventBus/issues/55.
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                UncaughtExceptionHandler.INSTANCE.handle(
+                        Thread.currentThread(),
+                        event.causingSubscriber.getClass().getSimpleName() + " while handling " + event.causingEvent.getClass().getSimpleName(),
+                        event.throwable);
+            }
+        });
     }
 }
