@@ -13,6 +13,10 @@ import digital.bauermeister.chromecastdisplay.bus_event.from_worker.StateEvent;
 public class CommandHandler extends CommandLauncher {
     private static final String TAG = "CommandHandler";
 
+    public CommandHandler(IsActiveProvider isActiveProvider) {
+        super(isActiveProvider);
+    }
+
     protected void handleLine(String line) {
         super.handleLine(line);
         post(HeartBeatEvent.Beat);

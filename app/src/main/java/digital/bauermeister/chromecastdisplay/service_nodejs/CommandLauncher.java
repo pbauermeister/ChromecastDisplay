@@ -13,6 +13,14 @@ public class CommandLauncher extends ShellCommand {
 
     private static final String TAG = "CommandLauncher";
 
+    public CommandLauncher(IsActiveProvider isActiveProvider) {
+        super(isActiveProvider);
+    }
+
+    public CommandLauncher() {
+        super();
+    }
+
     public boolean initDebian() {
         executeOk("su", "-c", "debian.sh unmount");
         return executeOk("su", "-c", "debian.sh mount");

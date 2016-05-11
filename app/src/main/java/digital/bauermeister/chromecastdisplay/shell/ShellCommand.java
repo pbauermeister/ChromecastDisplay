@@ -29,7 +29,24 @@ public class ShellCommand {
     protected Integer returnCode = null;
 
     private static int cmdNr = 0;
+    final private IsActiveProvider isActiveProvider;
 
+    public interface IsActiveProvider{
+        boolean isActive();
+    }
+
+    public ShellCommand(IsActiveProvider isActiveProvider) {
+        this.isActiveProvider = isActiveProvider;
+    }
+
+    public ShellCommand() {
+        this.isActiveProvider = new IsActiveProvider() {
+            @Override
+            public boolean isActive() {
+                return true;
+            }
+        } ;
+    }
     public static boolean isRooted() {
         return new ShellCommand().executeOk("su", "-c", "true");
     }
@@ -83,7 +100,7 @@ public class ShellCommand {
 
     public boolean executeAndHandleLines(String... cmd) {
         if (start(cmd)) {
-            while (true) {
+            while (isActiveProvider.isActive()) {
                 String line;
                 try {
                     line = stdinReader.readLine();

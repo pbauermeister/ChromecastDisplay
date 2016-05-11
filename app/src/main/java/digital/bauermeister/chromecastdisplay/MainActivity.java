@@ -185,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
     public void onEventMainThread(ChromecastInfoEvent event) {
         resetIfFirstTime();
         ChromecastInfo selected = PreferencesManager.INSTANCE.getChosenDevice();
+        // int a = 0; a = a / a; // test crash handling
 
         Log.d(TAG, "??? is=" + isSelectedDevice(event.chromecastInfo) + " sel=" + selected + " has=" + DeviceManager.INSTANCE.has(event.chromecastInfo));
 

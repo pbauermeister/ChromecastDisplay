@@ -14,11 +14,13 @@ import digital.bauermeister.chromecastdisplay.Util;
 import digital.bauermeister.chromecastdisplay.crash.UncaughtExceptionHandler;
 import digital.bauermeister.chromecastdisplay.shell.ShellCommand;
 
-public class NodejsBasedService extends Service {
+public class NodejsBasedService extends Service implements ShellCommand.IsActiveProvider {
     private static final String TAG = "TheService";
 
     final static int INIT_RETRY_DELAY = 3;
     final static int INIT_RETRY_MAX_TIME = 60;
+
+    private boolean active = false;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -30,12 +32,14 @@ public class NodejsBasedService extends Service {
     public void onCreate() {
         Log.d(TAG, "*** Service created ***");
         super.onCreate();
+        active = true;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDestroy() {
         Log.d(TAG, "*** Service destroyed ***");
+        active = false;
         EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
@@ -51,6 +55,7 @@ public class NodejsBasedService extends Service {
         CommandLauncher cmd;
 
         // check for rooted
+        if(!active) return;
         boolean rooted = ShellCommand.isRooted();
         //toast("Rooted: " + rooted);111
         if (!rooted) {
@@ -59,6 +64,7 @@ public class NodejsBasedService extends Service {
         }
 
         // try init Debian for a couple of attempts, may be necessary at boot time
+        if(!active) return;
         cmd = new CommandLauncher();
         int t = 0;
         while (!cmd.initDebian()) {
@@ -72,6 +78,7 @@ public class NodejsBasedService extends Service {
         Log.d(TAG, "********** initDebian: ok in " + t);
 
         // check for nodejs script
+        if(!active) return;
         cmd = new CommandLauncher();
         t = 0;
         while (!cmd.hasNodeJsProgram()) {
@@ -86,8 +93,8 @@ public class NodejsBasedService extends Service {
         Log.d(TAG, "********** hasNodeJsProgram: ok in " + t);
 
         // run nodejs script
-        while (true) {
-            cmd = new CommandHandler();
+        while (active) {
+            cmd = new CommandHandler(this);
             if (!cmd.runNodeJsProgram()) {
                 showDialog(0, R.string.error_nodejs_program_message, cmd, false);
             }
@@ -154,6 +161,11 @@ public class NodejsBasedService extends Service {
                 Util.showDialog(activity, titleId, message, null);
             }
         });
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
     }
 
     private interface RunnableInUiThread extends Runnable {
